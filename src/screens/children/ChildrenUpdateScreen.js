@@ -6,30 +6,41 @@ import {
   TextInput,
   ScrollView,
   Alert,
-  TouchableOpacity,
-  Platform,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Button } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import UploadImage from "../../components/UploadImage";
-import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 
 const ChildrenUpdateScreen = function ({ navigation }) {
   const children = navigation.state.params;
 
-  const [_date, _month, _year] = children.dateOfBirth.split("/");
-  const [date, month, year] = children.adoptiveDate.split("/");
+  const [_date, _month, _year] = children.dateOfBirth
+    ? children.dateOfBirth.split("/")
+    : convertDateToString(new Date()).split("/");
+  const [date, month, year] = children.adoptiveDate
+    ? children.adoptiveDate.split("/")
+    : convertDateToString(new Date()).split("/");
+  const [date_, month_, year_] = children.introductoryDate
+    ? children.introductoryDate.split("/")
+    : convertDateToString(new Date()).split("/");
 
+  const [introducers, setIntroducer] = useState([]);
+  const [nurturers, setNurturers] = useState([]);
   const [dob, setDob] = useState(new Date(+_year, +_month - 1, +_date));
   const [ad, setAd] = useState(new Date(+year, +month - 1, +date));
+  const [idate, setIdate] = useState(new Date(+year_, +month_ - 1, +date_));
   const [fullName, setFullName] = useState(children.fullName);
   const [gender, setGender] = useState(children.gender);
   const [status, setStatus] = useState(children.status);
   const [dateOfBirth, setDateOfBirth] = useState(children.dateOfBirth);
   const [adoptiveDate, setAdoptiveDate] = useState(children.adoptiveDate);
+  const [introductoryDate, setIntroductoryDate] = useState(
+    children.introductoryDate
+  );
+  const [introducerId, setIntroducerId] = useState(children.introducerId);
+  const [nurturerId, setNurturerId] = useState(children.nurturerId);
 
   const update = async function () {
     const id = await AsyncStorage.getItem("childId");
@@ -42,8 +53,11 @@ const ChildrenUpdateScreen = function ({ navigation }) {
       fullName,
       gender,
       dateOfBirth,
-      status,
       adoptiveDate,
+      introductoryDate,
+      introducerId,
+      nurturerId,
+      status,
     });
 
     var requestOptions = {
@@ -80,7 +94,59 @@ const ChildrenUpdateScreen = function ({ navigation }) {
     }
   };
 
-  const convertDateToString = function (selectedDate) {
+  const getIntroducer = async function () {
+    const token = await AsyncStorage.getItem("accessToken");
+    let isMounted = true;
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${token}`);
+
+    var requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    const response = await fetch(
+      "https://orphanmanagement.herokuapp.com/api/v1/manager/introducer/all",
+      requestOptions
+    );
+    const result = await response.json();
+    if (isMounted) setIntroducer(result.data);
+    // console.log(introducers);
+    return () => {
+      isMounted = false;
+    };
+  };
+
+  useEffect(getIntroducer, []);
+
+  const getNuturer = async function () {
+    const token = await AsyncStorage.getItem("accessToken");
+    let isMounted = true;
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${token}`);
+
+    var requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    const response = await fetch(
+      "https://orphanmanagement.herokuapp.com/api/v1/manager/nurturer/all",
+      requestOptions
+    );
+    const result = await response.json();
+    if (isMounted) setNurturers(result.data);
+    // console.log(introducers);
+    return () => {
+      isMounted = false;
+    };
+  };
+
+  useEffect(getNuturer, []);
+
+  function convertDateToString(selectedDate) {
     const currentDate = selectedDate;
     let date = currentDate.getDate();
     let month = currentDate.getMonth() + 1;
@@ -88,7 +154,7 @@ const ChildrenUpdateScreen = function ({ navigation }) {
     if (date < 10) date = "0" + date;
     if (month < 10) month = "0" + month;
     return date + "/" + month + "/" + year;
-  };
+  }
 
   return (
     <KeyboardAwareScrollView extraHeight={150}>
@@ -111,8 +177,8 @@ const ChildrenUpdateScreen = function ({ navigation }) {
             }}
             itemStyle={{ height: 120 }}
           >
-            <Picker.Item label="Nam" value={true} />
-            <Picker.Item label="Nữ" value={false} />
+            <Picker.Item key={0} label="Nam" value={true} />
+            <Picker.Item key={1} label="Nữ" value={false} />
           </Picker>
         </View>
 
@@ -127,7 +193,39 @@ const ChildrenUpdateScreen = function ({ navigation }) {
           }}
         />
 
-        <Text style={styles.label}>Ngày nhận nuôi: </Text>
+        <Text style={styles.label}>Ngày được giới thiệu: </Text>
+        <DateTimePicker
+          value={idate}
+          mode="date"
+          display="calendar"
+          onChange={(e, selectedDate) => {
+            setIdate(selectedDate);
+            setIntroductoryDate(convertDateToString(selectedDate));
+          }}
+        />
+
+        <Text style={styles.label}>Người giới thiệu: </Text>
+        <View>
+          <Picker
+            selectedValue={introducerId}
+            onValueChange={(itemValue, itemIndex) => {
+              setIntroducerId(itemValue);
+            }}
+            itemStyle={{ height: 120 }}
+          >
+            {introducers.map((introducer) => {
+              return (
+                <Picker.Item
+                  key={introducer.id}
+                  label={introducer.fullName}
+                  value={introducer.id}
+                />
+              );
+            })}
+          </Picker>
+        </View>
+
+        <Text style={styles.label}>Ngày được nhận nuôi: </Text>
         <DateTimePicker
           value={ad}
           mode="date"
@@ -138,17 +236,26 @@ const ChildrenUpdateScreen = function ({ navigation }) {
           }}
         />
 
-        <Text style={styles.label}>Trạng thái: </Text>
+        <Text style={styles.label}>Người nhận nuôi: </Text>
         <View>
           <Picker
-            selectedValue={status}
+            selectedValue={nurturerId}
             onValueChange={(itemValue, itemIndex) => {
-              setStatus(itemValue);
+              setNurturerId(itemValue);
+              if (itemValue !== 0) setStatus("RECEIVED");
+              else setStatus("WAIT_TO_RECEIVE");
             }}
             itemStyle={{ height: 120 }}
           >
-            <Picker.Item label="Đang ở trung tâm" value="WAIT_TO_RECEIVE" />
-            <Picker.Item label="Đã được nhận nuôi" value="RECEIVED" />
+            {nurturers.map((nurturer) => {
+              return (
+                <Picker.Item
+                  key={nurturer.id}
+                  label={nurturer.fullName}
+                  value={nurturer.id}
+                />
+              );
+            })}
           </Picker>
         </View>
       </ScrollView>

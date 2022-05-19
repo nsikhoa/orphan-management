@@ -21,7 +21,7 @@ const center = [
 const activities = [
   "Từ thiện",
   "Dã ngoại",
-  "Nhận nuôi",
+  "Nhận nuôi trẻ",
   "Giới thiệu trẻ",
   "Phản hồi",
   "Thống kê",
@@ -38,6 +38,10 @@ const checkScreen = function (nameScreen) {
       return "staffs";
     case "Trang thiết bị":
       return "furniture";
+    case "Giới thiệu trẻ":
+      return "introducer";
+    case "Nhận nuôi trẻ":
+      return "nurturer";
   }
 };
 
@@ -56,7 +60,7 @@ const SideMenu = function ({ navigation }) {
     };
     try {
       const response = await fetch(
-        "https://orphanmanagement.herokuapp.com/api/v1/auth/account",
+        "https://orphanmanagement.herokuapp.com/api/v1/profile/account",
         requestOptions
       );
       const result = await response.json();
@@ -107,7 +111,10 @@ const SideMenu = function ({ navigation }) {
           keyExtractor={(activity) => activity}
           renderItem={({ item }) => {
             return (
-              <TouchableOpacity style={styles.touch}>
+              <TouchableOpacity
+                style={styles.touch}
+                onPress={() => navigation.navigate(checkScreen(item))}
+              >
                 <Text style={styles.text}>{item}</Text>
               </TouchableOpacity>
             );

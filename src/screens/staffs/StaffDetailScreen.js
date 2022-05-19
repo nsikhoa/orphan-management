@@ -23,13 +23,14 @@ const StaffDetailScreen = function ({ navigation }) {
     };
     try {
       const response = await fetch(
-        `https://orphanmanagement.herokuapp.com/api/v1/manager/staff/${id}`,
+        `https://orphanmanagement.herokuapp.com/api/v1/manager/employee/${id}`,
         requestOptions
       );
       const result = await response.json();
       // setStaff(result.data);
       setIsLoading(true);
       if (isMounted) setStaff(result.data);
+      // console.log(staff);
       return () => {
         isMounted = false;
       };
@@ -66,12 +67,8 @@ const StaffDetailScreen = function ({ navigation }) {
             Giới tính: {staff.gender ? "Nam" : "Nữ"}
           </Text>
           <Text style={styles.text}>CMND: {staff.identification}</Text>
-          <Text style={styles.text}>Ngày sinh: {staff.dateOfBirth}</Text>
+          <Text style={styles.text}>Ngày sinh: {staff.date_of_birth}</Text>
           <Text style={styles.text}>Số điện thoại: {staff.phone}</Text>
-          <Text style={styles.text}>
-            Loại nhân viên:{" "}
-            {staff.typeStaff === "NhanVien" ? "Nhân viên" : "Cán bộ"}
-          </Text>
         </View>
       ) : (
         <></>

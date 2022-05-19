@@ -14,15 +14,16 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 
 const StaffCreateScreen = function ({ navigation }) {
-  const [date, setDate] = useState(new Date());
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [idCard, setIdCard] = useState("");
+  const [identification, setIdentification] = useState("");
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState(true);
-  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [dob, setDob] = useState(new Date());
+  const [dateOfBirth, setDateOfBirth] = useState(
+    convertDateToString(new Date())
+  );
   const [address, setAddress] = useState("");
-  const [typeStaff, setTypeStaff] = useState("NhanVien");
 
   const createStaff = async function () {
     const token = await AsyncStorage.getItem("accessToken");
@@ -32,11 +33,11 @@ const StaffCreateScreen = function ({ navigation }) {
 
     var raw = JSON.stringify({
       address,
-      date_of_birth: dateOfBirth,
+      dateOfBirth,
       email,
       fullName,
       gender,
-      identification: idCard,
+      identification,
       phone,
       image: "",
     });
@@ -49,7 +50,7 @@ const StaffCreateScreen = function ({ navigation }) {
     };
     try {
       const response = await fetch(
-        "https://orphanmanagement.herokuapp.com/api/v1/manager/staff",
+        "https://orphanmanagement.herokuapp.com/api/v1/manager/employee",
         requestOptions
       );
       const result = await response.json();
@@ -80,6 +81,16 @@ const StaffCreateScreen = function ({ navigation }) {
       alert("Dữ liệu nhập không hợp lệ");
     }
   };
+
+  function convertDateToString(selectedDate) {
+    const currentDate = selectedDate;
+    let date = currentDate.getDate();
+    let month = currentDate.getMonth() + 1;
+    let year = currentDate.getFullYear();
+    if (date < 10) date = "0" + date;
+    if (month < 10) month = "0" + month;
+    return date + "/" + month + "/" + year;
+  }
 
   return (
     <KeyboardAwareScrollView extraHeight={150}>
@@ -115,8 +126,8 @@ const StaffCreateScreen = function ({ navigation }) {
         <TextInput
           style={styles.input}
           placeholder="CMND/CCCD"
-          value={idCard}
-          onChangeText={(idCard) => setIdCard(idCard)}
+          value={identification}
+          onChangeText={(identification) => setIdentification(identification)}
         />
 
         <Text style={styles.label}>Số điện thoại: </Text>
@@ -143,21 +154,12 @@ const StaffCreateScreen = function ({ navigation }) {
 
         <Text style={styles.label}>Ngày sinh: </Text>
         <DateTimePicker
-          value={date}
+          value={dob}
           mode="date"
           display="calendar"
           onChange={(e, selectedDate) => {
-            const currentDate = selectedDate;
-            let date = currentDate.getDate();
-            let month = currentDate.getMonth() + 1;
-            let year = currentDate.getFullYear();
-            if (date < 10) date = "0" + date;
-            if (month < 10) month = "0" + month;
-            let dob = "";
-
-            dob = date + "/" + month + "/" + year;
-            setDate(currentDate);
-            setDateOfBirth(dob);
+            setDob(selectedDate);
+            setDateOfBirth(convertDateToString(selectedDate));
           }}
         />
 

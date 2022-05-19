@@ -19,32 +19,33 @@ import { Picker } from "@react-native-picker/picker";
 
 const StaffUpdateScreen = ({ navigation }) => {
   const staff = navigation.state.params;
-  const [image, setImage] = useState(null);
   // const [staff, setStaff] = useState("");
   // const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    (async () => {
-      if (Platform.OS === "ios") {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
+  // useEffect(() => {
+  //   (async () => {
+  //     if (Platform.OS === "ios") {
+  //       const { status } =
+  //         await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-        if (status !== "granted") {
-          alert("Sorry, we need camera roll permissions to make this work!");
-        }
-      }
-    })();
-  }, []);
-  const [_date, _month, _year] = staff.dateOfBirth.split("/");
+  //       if (status !== "granted") {
+  //         alert("Sorry, we need camera roll permissions to make this work!");
+  //       }
+  //     }
+  //   })();
+  // }, []);
+  const [_date, _month, _year] = staff.date_of_birth
+    ? staff.date_of_birth.split("/")
+    : convertDateToString(new Date()).split("/");
+  const [dob, setDob] = useState(new Date(+_year, +_month - 1, +_date));
 
   const [fullName, setFullName] = useState(staff.fullName);
   const [email, setEmail] = useState(staff.email);
-  const [idCard, setIdCard] = useState(staff.identification);
+  const [identification, setIdentification] = useState(staff.identification);
   const [phone, setPhone] = useState(staff.phone);
-  const [date, setDate] = useState(new Date(+_year, +_month - 1, +_date));
   const [gender, setGender] = useState(staff.gender);
-  const [dateOfBirth, setDateOfBirth] = useState(staff.dateOfBirth);
+  const [dateOfBirth, setDateOfBirth] = useState(staff.date_of_birth);
   const [address, setAddress] = useState(staff.address);
-  const [typeStaff, setTypeStaff] = useState(staff.typeStaff);
+  const [image, setImage] = useState(staff.image);
 
   // if (!mounted) {
   //   getStaff();
@@ -53,18 +54,18 @@ const StaffUpdateScreen = ({ navigation }) => {
   // useEffect(() => {
   //   setMounted(true);
   // }, []);
-  const openGallery = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [3, 4],
-      quality: 1,
-    });
-    console.log(result);
-    if (!result.cancelled) {
-      setImage(result.uri);
-    }
-  };
+  // const openGallery = async () => {
+  //   let result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //     allowsEditing: true,
+  //     aspect: [3, 4],
+  //     quality: 1,
+  //   });
+  //   console.log(result);
+  //   if (!result.cancelled) {
+  //     setImage(result.uri);
+  //   }
+  // };
 
   const update = async function () {
     const id = await AsyncStorage.getItem("staffId");
@@ -78,10 +79,10 @@ const StaffUpdateScreen = ({ navigation }) => {
       email,
       fullName,
       gender,
-      identification: idCard,
+      identification,
       phone,
       dateOfBirth,
-      typeStaff,
+      image,
     });
 
     var requestOptions = {
@@ -92,7 +93,7 @@ const StaffUpdateScreen = ({ navigation }) => {
     };
     try {
       const response = await fetch(
-        `https://orphanmanagement.herokuapp.com/api/v1/manager/staff/${id}`,
+        `https://orphanmanagement.herokuapp.com/api/v1/manager/employee/${id}`,
         requestOptions
       );
       const result = await response.json();
@@ -118,10 +119,19 @@ const StaffUpdateScreen = ({ navigation }) => {
     }
   };
 
+  function convertDateToString(selectedDate) {
+    const currentDate = selectedDate;
+    let date = currentDate.getDate();
+    let month = currentDate.getMonth() + 1;
+    let year = currentDate.getFullYear();
+    if (date < 10) date = "0" + date;
+    if (month < 10) month = "0" + month;
+    return date + "/" + month + "/" + year;
+  }
+
   return (
     <KeyboardAwareScrollView extraHeight={150}>
-      <UploadImage img={staff.procFile} />
-      <Button title="Pick an image from camera roll" onPress={openGallery} />
+      <UploadImage img={staff.image} />
       <ScrollView>
         <Text style={styles.label}>Họ và tên: </Text>
         <TextInput
@@ -129,7 +139,6 @@ const StaffUpdateScreen = ({ navigation }) => {
           style={styles.input}
           placeholder="Họ và tên"
           onChangeText={(fullName) => {
-            console.log(fullName);
             setFullName(fullName);
           }}
         />
@@ -139,7 +148,6 @@ const StaffUpdateScreen = ({ navigation }) => {
           style={styles.input}
           placeholder="Địa chỉ"
           onChangeText={(address) => {
-            console.log(address);
             setAddress(address);
           }}
         />
@@ -156,7 +164,7 @@ const StaffUpdateScreen = ({ navigation }) => {
           defaultValue={staff.identification}
           style={styles.input}
           placeholder="CMND/CCCD"
-          onChangeText={(idCard) => setIdCard(idCard)}
+          onChangeText={(idCard) => setIdentification(idCard)}
         />
         <Text style={styles.label}>Số điện thoại: </Text>
         <TextInput
@@ -180,25 +188,16 @@ const StaffUpdateScreen = ({ navigation }) => {
         </View>
         <Text style={styles.label}>Ngày sinh: </Text>
         <DateTimePicker
-          value={date}
+          value={dob}
           mode="date"
           display="calendar"
           onChange={(e, selectedDate) => {
-            const currentDate = selectedDate;
-            let date = currentDate.getDate();
-            let month = currentDate.getMonth() + 1;
-            let year = currentDate.getFullYear();
-            if (date < 10) date = "0" + date;
-            if (month < 10) month = "0" + month;
-            let dob = "";
-
-            dob = date + "/" + month + "/" + year;
-            setDate(currentDate);
-            setDateOfBirth(dob);
+            setDob(selectedDate);
+            setDateOfBirth(convertDateToString(selectedDate));
           }}
         />
 
-        <Text style={styles.label}>Loại nhân viên: </Text>
+        {/* <Text style={styles.label}>Loại nhân viên: </Text>
         <View>
           <Picker
             selectedValue={typeStaff}
@@ -210,7 +209,7 @@ const StaffUpdateScreen = ({ navigation }) => {
             <Picker.Item label="Nhân viên" value="NhanVien" />
             <Picker.Item label="Cán bộ" value="CanBo" />
           </Picker>
-        </View>
+        </View> */}
       </ScrollView>
       <Button
         title="Cập nhật"

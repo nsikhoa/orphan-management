@@ -19,6 +19,14 @@ import FurnitureListScreen from "./src/screens/furniture/FurnitureListScreen";
 import FurnitureCreateScreen from "./src/screens/furniture/FurnitureCreateScreen";
 import FurnitureDetailScreen from "./src/screens/furniture/FurnitureDetailScreen";
 import FurnitureUpdateScreen from "./src/screens/furniture/FurnitureUpdateScreen";
+import IntroducerListScreen from "./src/screens/introducer/IntroducerListScreen";
+import IntroducerDetailScreen from "./src/screens/introducer/IntroducerDetailScreen";
+import IntroducerCreateScreen from "./src/screens/introducer/IntroducerCreateScreen";
+import IntroducerUpdateScreen from "./src/screens/introducer/IntroducerUpdateScreen";
+import NurturerListScreen from "./src/screens/nurturer/NurturerListScreen";
+import NurturerDetailScreen from "./src/screens/nurturer/NurturerDetailScreen";
+import NurturerCreateScreen from "./src/screens/nurturer/NurturerCreateScreen";
+import NurturerUpdateScreen from "./src/screens/nurturer/NurturerUpdateScreen";
 import AccountListScreen from "./src/screens/account/AccountListScreen";
 import AccountCreateScreen from "./src/screens/account/AccountCreateScreen";
 import SideMenu from "./src/components/SideMenu";
@@ -133,12 +141,54 @@ const furnitureStack = createStackNavigator({
   },
 });
 
+const introducerStack = createStackNavigator({
+  IntroducerList: {
+    screen: IntroducerListScreen,
+    navigationOptions: ({ navigation }) =>
+      mainHeader(navigation, "Giới thiệu trẻ"),
+  },
+  IntroducerCreate: {
+    screen: IntroducerCreateScreen,
+    navigationOptions: () => header("Thêm người giới thiệu"),
+  },
+  IntroducerDetail: {
+    screen: IntroducerDetailScreen,
+    navigationOptions: () => header("Chi tiết người giới thiệu"),
+  },
+  IntroducerUpdate: {
+    screen: IntroducerUpdateScreen,
+    navigationOptions: () => header("Cập nhật người giới thiệu"),
+  },
+});
+
+const nurturerStack = createStackNavigator({
+  NurturerList: {
+    screen: NurturerListScreen,
+    navigationOptions: ({ navigation }) =>
+      mainHeader(navigation, "Nhận nuôi trẻ"),
+  },
+  NurturerCreate: {
+    screen: NurturerCreateScreen,
+    navigationOptions: () => header("Thêm người nhận nuôi"),
+  },
+  NurturerDetail: {
+    screen: NurturerDetailScreen,
+    navigationOptions: () => header("Chi tiết người nhận nuôi"),
+  },
+  NurturerUpdate: {
+    screen: NurturerUpdateScreen,
+    navigationOptions: () => header("Cập nhật người nhận nuôi"),
+  },
+});
+
 const appDrawer = createDrawerNavigator(
   {
     account: accountStack,
     staffs: staffStack,
     children: childrenStack,
     furniture: furnitureStack,
+    introducer: introducerStack,
+    nurturer: nurturerStack,
   },
   {
     contentComponent: SideMenu,

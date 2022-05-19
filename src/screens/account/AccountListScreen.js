@@ -10,6 +10,7 @@ import {
 import { Button } from "react-native-elements";
 import ListItem from "../../components/ListItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Feather } from "@expo/vector-icons";
 
 const AccountListScreen = ({ navigation }) => {
   const [accounts, setAccounts] = useState([]);
@@ -101,10 +102,16 @@ const AccountListScreen = ({ navigation }) => {
                     key={account.id}
                     name={account.fullName}
                   />
-                  <Button
-                    title="Delete"
+                  <TouchableOpacity
                     onPress={() => createDeleteDialog(account.id)}
-                  />
+                  >
+                    <Feather
+                      style={{ top: 5 }}
+                      name="trash"
+                      size={24}
+                      color="black"
+                    />
+                  </TouchableOpacity>
                 </TouchableOpacity>
               );
             })

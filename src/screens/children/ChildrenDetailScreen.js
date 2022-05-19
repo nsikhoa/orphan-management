@@ -7,6 +7,10 @@ import UploadImage from "../../components/UploadImage";
 
 const ChildrenDetailScreen = function ({ navigation }) {
   const [children, setChildren] = useState({});
+  const [introducer, setIntroducer] = useState({});
+  const [nurturer, setNurturer] = useState({});
+  const [introducerId, setIntroducerId] = useState(0);
+  const [nurturerId, setNurturerId] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   const getChildren = async function () {
@@ -30,6 +34,11 @@ const ChildrenDetailScreen = function ({ navigation }) {
       // setStaff(result.data);
       setIsLoading(true);
       if (isMounted) setChildren(result.data);
+      // console.log(children);
+      setIntroducerId(children.introducerId);
+      setNurturerId(children.nurturerId);
+      // console.log(introducerId);
+      // console.log(nurturerId);
       return () => {
         isMounted = false;
       };
@@ -38,6 +47,64 @@ const ChildrenDetailScreen = function ({ navigation }) {
     }
   };
   useEffect(getChildren);
+
+  const getIntroducer = async function () {
+    const token = await AsyncStorage.getItem("accessToken");
+    let isMounted = true;
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${token}`);
+
+    var requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+    try {
+      const response = await fetch(
+        `https://orphanmanagement.herokuapp.com/api/v1/manager/introducer/${introducerId}`,
+        requestOptions
+      );
+      const result = await response.json();
+      // setStaff(result.data);
+      if (isMounted) setIntroducer(result.data);
+      // console.log(introducer);
+      return () => {
+        isMounted = false;
+      };
+    } catch (e) {
+      throw new Error(e);
+    }
+  };
+  useEffect(getIntroducer);
+
+  const getNuturer = async function () {
+    const token = await AsyncStorage.getItem("accessToken");
+    let isMounted = true;
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${token}`);
+
+    var requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+    try {
+      const response = await fetch(
+        `https://orphanmanagement.herokuapp.com/api/v1/manager/nurturer/${nurturerId}`,
+        requestOptions
+      );
+      const result = await response.json();
+      // setStaff(result.data);
+      if (isMounted) setNurturer(result.data);
+      // console.log(nurturer);
+      return () => {
+        isMounted = false;
+      };
+    } catch (e) {
+      throw new Error(e);
+    }
+  };
+  useEffect(getNuturer);
 
   return (
     <>
@@ -70,11 +137,28 @@ const ChildrenDetailScreen = function ({ navigation }) {
             Ngày vào trung tâm: {children.introductoryDate}
           </Text>
           <Text style={styles.text}>
+            Người giới thiệu: {introducer ? introducer.fullName : <></>}
+          </Text>
+          <Text style={styles.text}>
             Trạng thái:{" "}
             {children.status === "WAIT_TO_RECEIVE"
               ? "Đang ở trung tâm"
               : "Đã được nhận nuôi"}
           </Text>
+          {children.status === "RECEIVED" ? (
+            <Text style={styles.text}>
+              Ngày được nhận nuôi: {children.adoptiveDate}
+            </Text>
+          ) : (
+            <></>
+          )}
+          {children.status === "RECEIVED" ? (
+            <Text style={styles.text}>
+              Người nhận nuôi: {nurturer ? nurturer.fullName : <></>}
+            </Text>
+          ) : (
+            <></>
+          )}
         </View>
       ) : (
         <></>

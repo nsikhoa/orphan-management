@@ -13,50 +13,19 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 
-const ChildrenCreateScreen = function ({ navigation }) {
-  const [introducers, setIntroducer] = useState([]);
-  const [dob, setDob] = useState(new Date());
-  const [ad, setAd] = useState(new Date());
-  const [iDate, setIDate] = useState(new Date());
+const NurturerCreateScreen = function ({ navigation }) {
   const [fullName, setFullName] = useState("");
   const [gender, setGender] = useState(true);
-  const [introducerId, setIntroducerId] = useState(0);
-  // const [status, setStatus] = useState("WAIT_TO_RECEIVE");
-  const [introductoryDate, setIntroductoryDate] = useState(
-    convertDateToString(new Date())
-  );
+  const [identification, setIdentification] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [dob, setDob] = useState(new Date());
   const [dateOfBirth, setDateOfBirth] = useState(
     convertDateToString(new Date())
   );
-  const [adoptiveDate, setAdoptiveDate] = useState("");
 
-  const getIntroducer = async function () {
-    const token = await AsyncStorage.getItem("accessToken");
-    let isMounted = true;
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${token}`);
-
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    const response = await fetch(
-      "https://orphanmanagement.herokuapp.com/api/v1/manager/introducer/all",
-      requestOptions
-    );
-    const result = await response.json();
-    if (isMounted) setIntroducer(result.data);
-    // console.log(introducers);
-    return () => {
-      isMounted = false;
-    };
-  };
-
-  useEffect(getIntroducer, []);
-
-  const createChild = async function () {
+  const createNurturer = async function () {
     const token = await AsyncStorage.getItem("accessToken");
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${token}`);
@@ -66,10 +35,10 @@ const ChildrenCreateScreen = function ({ navigation }) {
       dateOfBirth,
       fullName,
       gender,
-      adoptiveDate,
-      introductoryDate,
-      introducerId,
-      nurturerId: 0,
+      identification,
+      phone,
+      email,
+      address,
       image: "",
     });
 
@@ -81,7 +50,7 @@ const ChildrenCreateScreen = function ({ navigation }) {
     };
     try {
       const response = await fetch(
-        "https://orphanmanagement.herokuapp.com/api/v1/manager/children",
+        "https://orphanmanagement.herokuapp.com/api/v1/manager/nurturer",
         requestOptions
       );
       const result = await response.json();
@@ -154,68 +123,49 @@ const ChildrenCreateScreen = function ({ navigation }) {
           }}
         />
 
-        <Text style={styles.label}>Người giới thiệu: </Text>
-        <View>
-          <Picker
-            selectedValue={introducerId}
-            onValueChange={(itemValue, itemIndex) => {
-              setIntroducerId(itemValue);
-            }}
-            itemStyle={{ height: 120 }}
-          >
-            {introducers.map((introducer) => {
-              return (
-                <Picker.Item
-                  key={introducer.id}
-                  label={introducer.fullName}
-                  value={introducer.id}
-                />
-              );
-            })}
-          </Picker>
-        </View>
-
-        <Text style={styles.label}>Ngày được giới thiệu: </Text>
-        <DateTimePicker
-          value={iDate}
-          mode="date"
-          display="calendar"
-          onChange={(e, selectedDate) => {
-            setIDate(selectedDate);
-            setIntroductoryDate(convertDateToString(selectedDate));
-          }}
+        <Text style={styles.label}>CMND/CCCD: </Text>
+        <TextInput
+          keyboardType="numeric"
+          style={styles.input}
+          placeholder="CMND/CCCD"
+          value={identification}
+          onChangeText={(identification) => setIdentification(identification)}
+          autoCapitalize="none"
         />
 
-        {/* <Text style={styles.label}>Ngày nhận nuôi: </Text>
-        <DateTimePicker
-          value={ad}
-          mode="date"
-          display="calendar"
-          onChange={(e, selectedDate) => {
-            setAd(selectedDate);
-            setAdoptiveDate(convertDateToString(selectedDate));
-            console.log(adoptiveDate);
-          }}
-        /> */}
+        <Text style={styles.label}>Email: </Text>
+        <TextInput
+          keyboardType="email-address"
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={(email) => setEmail(email)}
+          autoCapitalize="none"
+        />
 
-        {/* <Text style={styles.label}>Trạng thái: </Text>
-        <View>
-          <Picker
-            selectedValue={status}
-            onValueChange={(itemValue, itemIndex) => {
-              setStatus(itemValue);
-            }}
-            itemStyle={{ height: 120 }}
-          >
-            <Picker.Item label="Đang ở trung tâm" value="WAIT_TO_RECEIVE" />
-            <Picker.Item label="Đã được nhận nuôi" value="RECEIVED" />
-          </Picker>
-        </View> */}
+        <Text style={styles.label}>Số điện thoại: </Text>
+        <TextInput
+          keyboardType="numeric"
+          style={styles.input}
+          placeholder="Số điện thoại"
+          value={phone}
+          onChangeText={(phone) => setPhone(phone)}
+          autoCapitalize="none"
+        />
+
+        <Text style={styles.label}>Địa chỉ: </Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Địa chỉ"
+          value={address}
+          onChangeText={(address) => setAddress(address)}
+          autoCapitalize="words"
+        />
       </ScrollView>
       <Button
-        title="Thêm trẻ em"
+        title="Thêm Người Nhận Nuôi"
         onPress={() => {
-          createChild();
+          createNurturer();
         }}
       />
     </KeyboardAwareScrollView>
@@ -238,4 +188,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChildrenCreateScreen;
+export default NurturerCreateScreen;
