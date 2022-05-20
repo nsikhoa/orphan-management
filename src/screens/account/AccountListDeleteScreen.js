@@ -11,8 +11,9 @@ import { Button } from "react-native-elements";
 import ListItem from "../../components/ListItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 
-const AccountListScreen = ({ navigation }) => {
+const AccountListDeleteScreen = ({ navigation }) => {
   const [accounts, setAccounts] = useState([]);
 
   const getAccounts = async function () {
@@ -28,7 +29,7 @@ const AccountListScreen = ({ navigation }) => {
     };
     try {
       const response = await fetch(
-        "https://orphanmanagement.herokuapp.com/api/v1/admin/all",
+        "https://orphanmanagement.herokuapp.com/api/v1/admin/all/deleted",
         requestOptions
       );
       const result = await response.json();
@@ -41,7 +42,7 @@ const AccountListScreen = ({ navigation }) => {
     }
   };
 
-  const deleteAccountTemp = async function (id) {
+  const restoreAccountTemp = async function (id) {
     const token = await AsyncStorage.getItem("accessToken");
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${token}`);
@@ -63,10 +64,32 @@ const AccountListScreen = ({ navigation }) => {
     }
   };
 
+  const deleteAccount = async function (id) {
+    const token = await AsyncStorage.getItem("accessToken");
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${token}`);
+
+    var requestOptions = {
+      method: "DELETE",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+    try {
+      const response = await fetch(
+        `https://orphanmanagement.herokuapp.com/api/v1/admin/${id}`,
+        requestOptions
+      );
+      const result = await response.json();
+      console.log(result);
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
+
   const createDeleteDialog = (id) => {
     Alert.alert(
       "Xóa dữ liệu",
-      "Dữ liệu sẽ được lưu trữ. Bạn có chắc chắn muốn xóa?",
+      "Dữ liệu sẽ xóa vĩnh viễn. Bạn có chắc chắn muốn xóa?",
       [
         {
           text: "Cancel",
@@ -75,7 +98,25 @@ const AccountListScreen = ({ navigation }) => {
         },
         {
           text: "OK",
-          onPress: () => deleteAccountTemp(id),
+          onPress: () => deleteAccount(id),
+        },
+      ]
+    );
+  };
+
+  const restoreDialog = (id) => {
+    Alert.alert(
+      "Khôi phục dữ liệu",
+      "Bạn có chắc chắn muốn khôi phục dữ liệu?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => restoreAccountTemp(id),
         },
       ]
     );
@@ -85,12 +126,6 @@ const AccountListScreen = ({ navigation }) => {
   return (
     <View style={{ flex: 1, backgroundColor: "#ECF8FF" }}>
       <View style={styles.container}>
-        <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-          <Button
-            title="Tài khoản lưu trữ"
-            onPress={() => navigation.navigate("AccountDelete")}
-          />
-        </View>
         <ScrollView>
           {accounts ? (
             accounts.map((account) => {
@@ -111,6 +146,14 @@ const AccountListScreen = ({ navigation }) => {
                     key={account.id}
                     name={account.fullName}
                   />
+                  <TouchableOpacity onPress={() => restoreDialog(account.id)}>
+                    <AntDesign
+                      style={{ top: 6, right: 15 }}
+                      name="sync"
+                      size={22}
+                      color="black"
+                    />
+                  </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => createDeleteDialog(account.id)}
                   >
@@ -144,17 +187,6 @@ const AccountListScreen = ({ navigation }) => {
           }}
         ></View>
       </View>
-      <Button
-        buttonStyle={{
-          alignSelf: "flex-end",
-          right: 8,
-          top: 0,
-          paddingLeft: 30,
-          paddingRight: 30,
-        }}
-        title="Thêm Tài Khoản"
-        onPress={() => navigation.navigate("AccountCreate")}
-      />
     </View>
   );
 };
@@ -176,4 +208,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AccountListScreen;
+export default AccountListDeleteScreen;

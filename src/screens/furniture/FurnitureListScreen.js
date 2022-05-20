@@ -11,6 +11,7 @@ import { Button } from "react-native-elements";
 import ListItem from "../../components/ListItem";
 // import { Context } from "../../context/appContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Feather } from "@expo/vector-icons";
 
 const FurnitureListScreen = ({ navigation }) => {
   const [furnitures, setFurnitures] = useState([]);
@@ -104,10 +105,16 @@ const FurnitureListScreen = ({ navigation }) => {
                     key={furniture.furnitureId}
                     name={furniture.nameFurniture}
                   />
-                  <Button
-                    title="Delete"
-                    onPress={() => createDeleteDialog(furniture.furnitureId)}
-                  />
+                  <TouchableOpacity
+                    onPress={() => createDeleteDialog(furniture.id)}
+                  >
+                    <Feather
+                      style={{ top: 5 }}
+                      name="trash"
+                      size={24}
+                      color="black"
+                    />
+                  </TouchableOpacity>
                 </TouchableOpacity>
               );
             })

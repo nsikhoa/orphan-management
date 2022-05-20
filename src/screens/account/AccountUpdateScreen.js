@@ -13,69 +13,68 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 
-const AccountCreateScreen = ({ navigation }) => {
-  const [fullName, setFullName] = useState("");
-  const [gender, setGender] = useState(true);
-  const [identification, setIdentification] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("");
-  const [dob, setDob] = useState(new Date());
-  const [date_of_birth, setDateOfBirth] = useState(
-    convertDateToString(new Date())
-  );
+const AccountUpdateScreen = function ({ navigation }) {
+  const account = navigation.state.params;
 
-  const createAccount = async function () {
+  const [_date, _month, _year] = account.date_of_birth
+    ? account.date_of_birth.split("/")
+    : convertDateToString(new Date()).split("/");
+  const [dob, setDob] = useState(new Date(+_year, +_month - 1, +_date));
+  const [fullName, setFullName] = useState(account.fullName);
+  const [gender, setGender] = useState(account.gender);
+  const [dateOfBirth, setDateOfBirth] = useState(account.dateOfBirth);
+  const [address, setAddress] = useState(account.address);
+  const [email, setEmail] = useState(account.email);
+  const [phone, setPhone] = useState(account.phone);
+  const [identification, setIdentification] = useState(account.identification);
+  const [image, setImage] = useState(account.image);
+
+  const update = async function () {
+    const id = await AsyncStorage.getItem("accountId");
     const token = await AsyncStorage.getItem("accessToken");
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${token}`);
     myHeaders.append("Content-Type", "application/json");
 
     var raw = JSON.stringify({
-      date_of_birth,
       fullName,
       gender,
-      identification,
-      phone,
-      email,
+      dateOfBirth,
       address,
-      password,
-      confirmPassword,
-      image: "",
-      roles: [role],
+      email,
+      phone,
+      identification,
+      image,
     });
 
     var requestOptions = {
-      method: "POST",
+      method: "PUT",
       headers: myHeaders,
       body: raw,
       redirect: "follow",
     };
     try {
       const response = await fetch(
-        "https://orphanmanagement.herokuapp.com/api/v1/admin",
+        `https://orphanmanagement.herokuapp.com/api/v1/manager/introducer/${id}`,
         requestOptions
       );
       const result = await response.json();
       console.log(result);
       if (result.code == 400) {
         if (result.message.includes(":"))
-          alert(
+          Alert.alert(
+            "Thông báo",
             result.message.slice(
               result.message.indexOf(":") + 2,
               result.message.length - 2
             )
           );
         else Alert.alert("Thông báo", result.message);
+      } else if (result.status == 500) {
+        Alert.alert("Thông báo", "Cập nhật không thành công!");
       } else
-        Alert.alert("Thông báo", "Thêm thành công", [
-          {
-            text: "OK",
-            onPress: () => navigation.goBack(),
-          },
+        Alert.alert("Thông báo", "Cập nhật thành công!", [
+          { text: "OK", style: "cancel", onPress: () => navigation.goBack() },
         ]);
     } catch (e) {
       Alert.alert("Thông báo", "Dữ liệu nhập không hợp lệ");
@@ -99,7 +98,7 @@ const AccountCreateScreen = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="Họ và tên"
-          value={fullName}
+          defaultValue={fullName}
           onChangeText={(fullName) => setFullName(fullName)}
           autoCapitalize="words"
         />
@@ -113,8 +112,8 @@ const AccountCreateScreen = ({ navigation }) => {
             }}
             itemStyle={{ height: 120 }}
           >
-            <Picker.Item key={1} label="Nam" value={true} />
-            <Picker.Item key={0} label="Nữ" value={false} />
+            <Picker.Item key={0} label="Nam" value={true} />
+            <Picker.Item key={1} label="Nữ" value={false} />
           </Picker>
         </View>
 
@@ -131,12 +130,11 @@ const AccountCreateScreen = ({ navigation }) => {
 
         <Text style={styles.label}>CMND/CCCD: </Text>
         <TextInput
-          keyboardType="numeric"
           style={styles.input}
           placeholder="CMND/CCCD"
-          value={identification}
+          defaultValue={identification}
           onChangeText={(identification) => setIdentification(identification)}
-          autoCapitalize="none"
+          autoCapitalize="words"
         />
 
         <Text style={styles.label}>Email: </Text>
@@ -144,7 +142,7 @@ const AccountCreateScreen = ({ navigation }) => {
           keyboardType="email-address"
           style={styles.input}
           placeholder="Email"
-          value={email}
+          defaultValue={email}
           onChangeText={(email) => setEmail(email)}
           autoCapitalize="none"
         />
@@ -154,7 +152,7 @@ const AccountCreateScreen = ({ navigation }) => {
           keyboardType="numeric"
           style={styles.input}
           placeholder="Số điện thoại"
-          value={phone}
+          defaultValue={phone}
           onChangeText={(phone) => setPhone(phone)}
           autoCapitalize="none"
         />
@@ -163,75 +161,12 @@ const AccountCreateScreen = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="Địa chỉ"
-          value={address}
+          defaultValue={address}
           onChangeText={(address) => setAddress(address)}
           autoCapitalize="words"
         />
-
-        <Text style={styles.label}>Quyền hệ thống: </Text>
-        <View>
-          <Picker
-            selectedValue={role}
-            onValueChange={(itemValue, itemIndex) => {
-              setRole(itemValue);
-            }}
-            itemStyle={{ height: 120 }}
-          >
-            <Picker.Item key={0} label="Quản trị viên" value="ROLE_ADMIN" />
-            <Picker.Item
-              key={1}
-              label="Quản lý hoạt động trung tâm"
-              value="ROLE_MANAGER_LOGISTIC"
-            />
-            <Picker.Item
-              key={2}
-              label="Quản lý nhân sự"
-              value="ROLE_MANAGER_HR"
-            />
-            <Picker.Item
-              key={3}
-              label="Quản lý trẻ em"
-              value="ROLE_MANAGER_CHILDREN"
-            />
-            <Picker.Item key={4} label="Nhân viên" value="ROLE_EMPLOYEE" />
-          </Picker>
-        </View>
-
-        <Text style={styles.label}>Mật khẩu: </Text>
-        <TextInput
-          secureTextEntry
-          style={styles.input}
-          placeholder="Mật khẩu"
-          value={password}
-          onChangeText={(password) => setPassword(password)}
-          autoCapitalize="none"
-        />
-
-        <Text style={styles.label}>Xác nhận mật khẩu: </Text>
-        <TextInput
-          secureTextEntry
-          style={styles.input}
-          placeholder="Xác nhận mật khẩu"
-          value={confirmPassword}
-          onChangeText={(confirmPassword) =>
-            setConfirmPassword(confirmPassword)
-          }
-          autoCapitalize="none"
-        />
-        {password !== confirmPassword ? (
-          <Text style={{ color: "red", fontSize: "14" }}>
-            Mật khẩu không khớp
-          </Text>
-        ) : (
-          <></>
-        )}
       </ScrollView>
-      <Button
-        title="Thêm Tài Khoản"
-        onPress={() => {
-          createAccount();
-        }}
-      />
+      <Button title="Cập nhật" onPress={update} />
     </KeyboardAwareScrollView>
   );
 };
@@ -252,4 +187,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AccountCreateScreen;
+export default AccountUpdateScreen;

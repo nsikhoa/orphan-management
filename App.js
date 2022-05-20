@@ -29,6 +29,8 @@ import NurturerCreateScreen from "./src/screens/nurturer/NurturerCreateScreen";
 import NurturerUpdateScreen from "./src/screens/nurturer/NurturerUpdateScreen";
 import AccountListScreen from "./src/screens/account/AccountListScreen";
 import AccountCreateScreen from "./src/screens/account/AccountCreateScreen";
+import AccountDetailScreen from "./src/screens/account/AccountDetailScreen";
+import AccountListDeleteScreen from "./src/screens/account/AccountListDeleteScreen";
 import SideMenu from "./src/components/SideMenu";
 import HeaderEl from "./src/components/HeaderEl";
 
@@ -77,9 +79,17 @@ const accountStack = createStackNavigator({
     screen: AccountListScreen,
     navigationOptions: ({ navigation }) => mainHeader(navigation, "Tài khoản"),
   },
+  AccountDelete: {
+    screen: AccountListDeleteScreen,
+    navigationOptions: () => header("Tài khoản lưu trữ"),
+  },
   AccountCreate: {
     screen: AccountCreateScreen,
     navigationOptions: () => header("Thêm tài khoản"),
+  },
+  AccountDetail: {
+    screen: AccountDetailScreen,
+    navigationOptions: () => header("Chi tiết tài khoản"),
   },
 });
 
