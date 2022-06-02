@@ -15,7 +15,9 @@ import { Picker } from "@react-native-picker/picker";
 const FurnitureCreateScreen = ({ navigation }) => {
   const [nameFurniture, setNameFurniture] = useState("");
   const [status, setStatus] = useState("GOOD");
-  const [quantity, setQuantity] = useState(0);
+  const [goodQuantity, setGoodQuantity] = useState(0);
+  const [brokenQuantity, setBrokenQuantity] = useState(0);
+  const [unitPrice, setUnitPrice] = useState(0);
   const createFurniture = async function () {
     const token = await AsyncStorage.getItem("accessToken");
     var myHeaders = new Headers();
@@ -25,7 +27,10 @@ const FurnitureCreateScreen = ({ navigation }) => {
     var raw = JSON.stringify({
       nameFurniture,
       status,
-      quantity,
+      goodQuantity,
+      brokenQuantity,
+      unitPrice,
+      image: "",
     });
 
     var requestOptions = {
@@ -73,14 +78,36 @@ const FurnitureCreateScreen = ({ navigation }) => {
           autoCapitalize="none"
         />
 
-        <Text style={styles.label}>Số lượng: </Text>
+        <Text style={styles.label}>Số lượng sử dụng tốt: </Text>
         <TextInput
           style={styles.input}
-          placeholder="Số lượng"
-          value={quantity}
+          placeholder="Số lượng sử dụng tốt"
+          value={goodQuantity}
           keyboardType="numeric"
-          onChangeText={(quantity) => {
-            setQuantity(Number(quantity));
+          onChangeText={(goodQuantity) => {
+            setGoodQuantity(Number(goodQuantity));
+          }}
+        />
+
+        <Text style={styles.label}>Số lượng hư hỏng: </Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Số lượng hư hỏng"
+          value={brokenQuantity}
+          keyboardType="numeric"
+          onChangeText={(brokenQuantity) => {
+            setBrokenQuantity(Number(brokenQuantity));
+          }}
+        />
+
+        <Text style={styles.label}>Đơn giá: </Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Đơn giá"
+          value={unitPrice}
+          keyboardType="numeric"
+          onChangeText={(unitPrice) => {
+            setUnitPrice(Number(unitPrice));
           }}
         />
 

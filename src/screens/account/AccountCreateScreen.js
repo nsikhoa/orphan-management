@@ -219,7 +219,7 @@ const AccountCreateScreen = ({ navigation }) => {
           autoCapitalize="none"
         />
         {password !== confirmPassword ? (
-          <Text style={{ color: "red", fontSize: "14" }}>
+          <Text style={{ color: "red", fontSize: 14 }}>
             Mật khẩu không khớp
           </Text>
         ) : (

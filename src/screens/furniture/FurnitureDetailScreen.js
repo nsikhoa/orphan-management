@@ -63,7 +63,13 @@ const FurnitureDetailScreen = ({ navigation }) => {
           <Text style={styles.text}>
             Tên trang thiết bị: {furniture.nameFurniture}
           </Text>
-          <Text style={styles.text}>Số lượng: {furniture.quantity}</Text>
+          <Text style={styles.text}>
+            Số lượng sử dụng tốt: {furniture.goodQuantity}
+          </Text>
+          <Text style={styles.text}>
+            Số lượng hư hỏng: {furniture.brokenQuantity}
+          </Text>
+          <Text style={styles.text}>Đơn giá: {furniture.unitPrice}</Text>
           <Text style={styles.text}>
             Trạng thái:{" "}
             {furniture.status === "GOOD" ? "Sử dụng tốt" : "Hư hỏng"}

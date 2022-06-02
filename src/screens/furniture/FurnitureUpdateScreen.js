@@ -17,7 +17,11 @@ const FurnitureUpdateScreen = ({ navigation }) => {
   console.log(furniture);
   const [nameFurniture, setNameFurniture] = useState(furniture.nameFurniture);
   const [status, setStatus] = useState(furniture.status);
-  const [quantity, setQuantity] = useState(furniture.quantity);
+  const [goodQuantity, setGoodQuantity] = useState(furniture.goodQuantity);
+  const [brokenQuantity, setBrokenQuantity] = useState(
+    furniture.brokenQuantity
+  );
+  const [unitPrice, setUnitPrice] = useState(furniture.unitPrice);
 
   const update = async function () {
     const id = await AsyncStorage.getItem("furnitureId");
@@ -29,7 +33,9 @@ const FurnitureUpdateScreen = ({ navigation }) => {
     var raw = JSON.stringify({
       image: "",
       nameFurniture,
-      quantity,
+      goodQuantity,
+      brokenQuantity,
+      unitPrice,
       status,
     });
 
@@ -45,7 +51,6 @@ const FurnitureUpdateScreen = ({ navigation }) => {
         requestOptions
       );
       const result = await response.json();
-      console.log(result);
       if (result.code == 400) {
         if (result.message.includes(":"))
           Alert.alert(
@@ -79,13 +84,33 @@ const FurnitureUpdateScreen = ({ navigation }) => {
           autoCapitalize="none"
         />
 
-        <Text style={styles.label}>Số lượng: </Text>
+        <Text style={styles.label}>Số lượng sử dụng tốt: </Text>
         <TextInput
           style={styles.input}
-          placeholder="Số lượng"
-          defaultValue={furniture.quantity.toString()}
-          onChangeText={(quantity) => {
-            setQuantity(Number(quantity));
+          placeholder="Số lượng sử dụng tốt"
+          defaultValue={furniture.goodQuantity.toString()}
+          onChangeText={(goodQuantity) => {
+            setGoodQuantity(Number(goodQuantity));
+          }}
+        />
+
+        <Text style={styles.label}>Số lượng hư hỏng: </Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Số lượng hư hỏng"
+          defaultValue={furniture.brokenQuantity.toString()}
+          onChangeText={(brokenQuantity) => {
+            setBrokenQuantity(Number(brokenQuantity));
+          }}
+        />
+
+        <Text style={styles.label}>Đơn giá: </Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Đơn giá"
+          defaultValue={furniture.unitPrice.toString()}
+          onChangeText={(unitPrice) => {
+            setUnitPrice(Number(unitPrice));
           }}
         />
 

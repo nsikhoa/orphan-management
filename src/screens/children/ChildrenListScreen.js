@@ -8,6 +8,7 @@ import {
   Alert,
   TextInput,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { Button } from "react-native-elements";
 import ListItem from "../../components/ListItem";
@@ -25,7 +26,7 @@ const ChildrenListScreen = function ({ navigation }) {
 
   const getChildren = async function () {
     const token = await AsyncStorage.getItem("accessToken");
-    let isMounted = true;
+    // let isMounted = true;
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${token}`);
 
@@ -36,18 +37,19 @@ const ChildrenListScreen = function ({ navigation }) {
     };
     try {
       const response = await fetch(
-        `https://orphanmanagement.herokuapp.com/api/v1/manager/children?page=${page}`,
+        `https://orphanmanagement.herokuapp.com/api/v1/manager/children?page=${page}&limit=10`,
         requestOptions
       );
       const result = await response.json();
-      if (isMounted) setChildren(result?.data.result);
+      setChildren([...children, ...result?.data.result]);
       if (result.code === 200) setTotal(result.data.total);
       else setTotal(0);
       setCode(result.code);
       setIsLoading(true);
-      return () => {
-        isMounted = false;
-      };
+      console.log(page);
+      // return () => {
+      //   isMounted = false;
+      // };
       // console.log(children);
     } catch (err) {
       console.error(err);
@@ -94,14 +96,14 @@ const ChildrenListScreen = function ({ navigation }) {
     };
     try {
       const response = await fetch(
-        `https://orphanmanagement.herokuapp.com/api/v1/manager/children/search?page=${page}`,
+        `https://orphanmanagement.herokuapp.com/api/v1/manager/children/search?page=${page}&limit=10`,
         requestOptions
       );
       const results = await response.json();
-      console.log(page);
-      if (!keyword) {
-        setPage(1);
-      }
+
+      // if (!keyword) {
+      //   setPage(1);
+      // }
       if (results.code === 200) setTotal(results.data.total);
       else setTotal(0);
 
@@ -131,7 +133,7 @@ const ChildrenListScreen = function ({ navigation }) {
 
   useEffect(() => {
     getChildren();
-  }, []);
+  }, [page]);
   return (
     <View style={{ flex: 1, backgroundColor: "#ECF8FF" }}>
       <View style={styles.container}>
@@ -147,121 +149,55 @@ const ChildrenListScreen = function ({ navigation }) {
             }}
             autoCapitalize="words"
           />
-          <TouchableOpacity onPress={search}>
+          <TouchableOpacity
+            onPress={() => {
+              setPage(1);
+              search();
+            }}
+          >
             <Feather name="search" size={41} color="black" />
           </TouchableOpacity>
         </View>
         {<Text style={{ bottom: 10 }}>Có {total} kết quả</Text>}
-        <ScrollView>
-          {children ? (
-            children.map((child) => {
-              return (
-                <TouchableOpacity
-                  style={styles.itemContainer}
-                  key={child.id}
-                  onPress={async () => {
-                    await AsyncStorage.setItem("childId", child.id.toString());
-                    navigation.navigate("ChildrenDetail");
-                  }}
-                >
-                  <ListItem
-                    id={child.id}
-                    key={child.id}
-                    name={child.fullName}
-                  />
-                  {/* <Button
+        <FlatList
+          data={children}
+          // keyExtractor={(child) => child.id}
+          onEndReachedThreshold={0.5}
+          onEndReached={() => setPage(page + 1)}
+          ListFooterComponent={() => {
+            return (
+              <View>
+                <ActivityIndicator />
+              </View>
+            );
+          }}
+          renderItem={({ item, index }) => {
+            return (
+              <TouchableOpacity
+                style={styles.itemContainer}
+                key={index}
+                onPress={async () => {
+                  await AsyncStorage.setItem("childId", item.id.toString());
+                  navigation.navigate("ChildrenDetail");
+                }}
+              >
+                <ListItem id={item.id} name={item.fullName} />
+                {/* <Button
                     title="Delete"
-                    onPress={() => createDeleteDialog(child.id)}
+                    onPress={() => createDeleteDialog(item.id)}
                   /> */}
-                  <TouchableOpacity
-                    onPress={() => createDeleteDialog(child.id)}
-                  >
-                    <Feather
-                      style={{ top: 5 }}
-                      name="trash"
-                      size={24}
-                      color="black"
-                    />
-                  </TouchableOpacity>
+                <TouchableOpacity onPress={() => createDeleteDialog(item.id)}>
+                  <Feather
+                    style={{ top: 5 }}
+                    name="trash"
+                    size={24}
+                    color="black"
+                  />
                 </TouchableOpacity>
-              );
-            })
-          ) : (
-            <Text
-              style={{
-                textAlign: "center",
-                fontStyle: "italic",
-                marginTop: 15,
-              }}
-            >
-              Chưa có dữ liệu
-            </Text>
-          )}
-          {total > 5 ? (
-            <View>
-              {page === 1 ? (
-                <View
-                  style={{
-                    top: 10,
-                    flexDirection: "row",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Button
-                    title="Next Page"
-                    onPress={() => {
-                      setPage(page + 1);
-                      if (keyword) {
-                        search();
-                      } else {
-                        getChildren();
-                      }
-                    }}
-                  />
-                </View>
-              ) : page !== 0 ? (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-around",
-                    top: 10,
-                  }}
-                >
-                  <Button
-                    title="Prev Page"
-                    onPress={() => {
-                      setPage(page - 1);
-                      if (keyword) {
-                        search();
-                      } else {
-                        getChildren();
-                      }
-                    }}
-                  />
-                  {page === children.pages ? (
-                    <></>
-                  ) : (
-                    <Button
-                      title="Next Page"
-                      onPress={() => {
-                        setPage(page + 1);
-                        if (keyword) {
-                          search();
-                        } else {
-                          getChildren();
-                        }
-                      }}
-                    />
-                  )}
-                </View>
-              ) : (
-                <></>
-              )}
-            </View>
-          ) : (
-            <></>
-          )}
-        </ScrollView>
+              </TouchableOpacity>
+            );
+          }}
+        />
         <View
           style={{
             marginTop: 20,

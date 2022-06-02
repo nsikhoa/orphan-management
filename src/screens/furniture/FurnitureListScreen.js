@@ -106,7 +106,7 @@ const FurnitureListScreen = ({ navigation }) => {
                     name={furniture.nameFurniture}
                   />
                   <TouchableOpacity
-                    onPress={() => createDeleteDialog(furniture.id)}
+                    onPress={() => createDeleteDialog(furniture.furnitureId)}
                   >
                     <Feather
                       style={{ top: 5 }}
