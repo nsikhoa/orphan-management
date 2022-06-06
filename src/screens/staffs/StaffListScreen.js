@@ -14,41 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather } from "@expo/vector-icons";
 
 const StaffListScreen = function ({ navigation }) {
-  // const { data, addStaff } = useContext(Context);
   const [staffs, setStaffs] = useState([]);
-  // const [pages, setPages] = useState(0);
-  // const [numPage, setNumPage] = useState(1);
-
-  // const getPageArray = function () {
-  //   let arr = [];
-  //   for (let i = 0; i < pages; i++) {
-  //     arr.push(i + 1);
-  //   }
-  //   return arr;
-  // };
-
-  // const getPage = async function (page) {
-  //   const token = await AsyncStorage.getItem("accessToken");
-  //   var myHeaders = new Headers();
-  //   myHeaders.append("Authorization", `Bearer ${token}`);
-
-  //   var requestOptions = {
-  //     method: "GET",
-  //     headers: myHeaders,
-  //     redirect: "follow",
-  //   };
-  //   try {
-  //     const response = await fetch(
-  //       `https://orphanmanagement.herokuapp.com/api/v1/manager/staff?page=${page}`,
-  //       requestOptions
-  //     );
-  //     const result = await response.json();
-  //     setStaffs(result.data.result);
-  //     setPages(result.data.pages);
-  //   } catch (e) {
-  //     throw new Error(e);
-  //   }
-  // };
 
   const deleteStaff = async function (id) {
     const token = await AsyncStorage.getItem("accessToken");
@@ -165,26 +131,7 @@ const StaffListScreen = function ({ navigation }) {
             flexDirection: "row",
             justifyContent: "center",
           }}
-        >
-          {/* {getPageArray().map((numPage) => {
-            return (
-              <TouchableOpacity
-                key={numPage}
-                onPress={() => setNumPage(numPage)}
-              >
-                <Text
-                  style={{
-                    margin: 20,
-                    padding: 5,
-                    backgroundColor: "#ECF8FF",
-                  }}
-                >
-                  {numPage}
-                </Text>
-              </TouchableOpacity>
-            );
-          })} */}
-        </View>
+        ></View>
       </View>
       <Button
         buttonStyle={{

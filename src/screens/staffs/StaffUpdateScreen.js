@@ -19,20 +19,7 @@ import { Picker } from "@react-native-picker/picker";
 
 const StaffUpdateScreen = ({ navigation }) => {
   const staff = navigation.state.params;
-  // const [staff, setStaff] = useState("");
-  // const [mounted, setMounted] = useState(false);
-  // useEffect(() => {
-  //   (async () => {
-  //     if (Platform.OS === "ios") {
-  //       const { status } =
-  //         await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-  //       if (status !== "granted") {
-  //         alert("Sorry, we need camera roll permissions to make this work!");
-  //       }
-  //     }
-  //   })();
-  // }, []);
   const [_date, _month, _year] = staff.date_of_birth
     ? staff.date_of_birth.split("/")
     : convertDateToString(new Date()).split("/");
@@ -46,26 +33,6 @@ const StaffUpdateScreen = ({ navigation }) => {
   const [dateOfBirth, setDateOfBirth] = useState(staff.date_of_birth);
   const [address, setAddress] = useState(staff.address);
   const [image, setImage] = useState(staff.image);
-
-  // if (!mounted) {
-  //   getStaff();
-  // }
-
-  // useEffect(() => {
-  //   setMounted(true);
-  // }, []);
-  // const openGallery = async () => {
-  //   let result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //     allowsEditing: true,
-  //     aspect: [3, 4],
-  //     quality: 1,
-  //   });
-  //   console.log(result);
-  //   if (!result.cancelled) {
-  //     setImage(result.uri);
-  //   }
-  // };
 
   const update = async function () {
     const id = await AsyncStorage.getItem("staffId");
@@ -196,20 +163,6 @@ const StaffUpdateScreen = ({ navigation }) => {
             setDateOfBirth(convertDateToString(selectedDate));
           }}
         />
-
-        {/* <Text style={styles.label}>Loại nhân viên: </Text>
-        <View>
-          <Picker
-            selectedValue={typeStaff}
-            onValueChange={(itemValue, itemIndex) => {
-              setTypeStaff(itemValue);
-            }}
-            itemStyle={{ height: 120 }}
-          >
-            <Picker.Item label="Nhân viên" value="NhanVien" />
-            <Picker.Item label="Cán bộ" value="CanBo" />
-          </Picker>
-        </View> */}
       </ScrollView>
       <Button
         title="Cập nhật"

@@ -27,10 +27,8 @@ const StaffDetailScreen = function ({ navigation }) {
         requestOptions
       );
       const result = await response.json();
-      // setStaff(result.data);
       setIsLoading(true);
       if (isMounted) setStaff(result.data);
-      // console.log(staff);
       return () => {
         isMounted = false;
       };
