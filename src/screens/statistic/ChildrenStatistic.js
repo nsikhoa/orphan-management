@@ -122,7 +122,6 @@ const ChildrenStatistic = function () {
       return () => {
         isMounted = false;
       };
-      // console.log(children);
     } catch (err) {
       throw new Error(err);
     }
@@ -149,7 +148,6 @@ const ChildrenStatistic = function () {
       return () => {
         isMounted = false;
       };
-      // console.log(children);
     } catch (err) {
       throw new Error(err);
     }
@@ -176,7 +174,6 @@ const ChildrenStatistic = function () {
       return () => {
         isMounted = false;
       };
-      // console.log(children);
     } catch (err) {
       throw new Error(err);
     }
