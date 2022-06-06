@@ -31,7 +31,7 @@ const centerChildren = [{ name: "Trẻ em" }];
 const activitiesChildren = ["Nhận nuôi trẻ", "Giới thiệu trẻ"];
 
 const centerHR = [{ name: "Nhân viên" }];
-const activitiesHR = ["Phản hồi", "Báo cáo"];
+const activitiesHR = [];
 
 const centerLogis = [{ name: "Trang thiết bị" }];
 const activitiesLogis = ["Từ thiện", "Dã ngoại"];
