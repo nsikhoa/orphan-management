@@ -1,18 +1,8 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Alert,
-  TouchableOpacity,
-} from "react-native";
+import React, { useState } from "react";
+import { Text, StyleSheet, TextInput, ScrollView, Alert } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Button } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker";
 
 const ProfileChangePasswordScreen = function ({ navigation }) {
   const [currentPassword, setCurrentPassword] = useState("");
