@@ -14,6 +14,7 @@ import { Feather } from "@expo/vector-icons";
 
 const AccountListScreen = ({ navigation }) => {
   const [accounts, setAccounts] = useState([]);
+  const [total, setTotal] = useState(0);
 
   const getAccounts = async function () {
     const token = await AsyncStorage.getItem("accessToken");
@@ -33,6 +34,8 @@ const AccountListScreen = ({ navigation }) => {
       );
       const result = await response.json();
       if (isMounted) setAccounts(result.data);
+      if (result.code === 200) setTotal(result.data.length);
+      else setTotal(0);
       return () => {
         isMounted = false;
       };
@@ -91,6 +94,7 @@ const AccountListScreen = ({ navigation }) => {
             onPress={() => navigation.navigate("AccountDelete")}
           />
         </View>
+        {<Text style={{ bottom: 10 }}>Có {total} kết quả</Text>}
         <ScrollView>
           {accounts ? (
             accounts.map((account) => {

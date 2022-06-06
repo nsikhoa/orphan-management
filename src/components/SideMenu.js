@@ -7,29 +7,39 @@ import {
   FlatList,
   Button,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Text } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UploadImage from "./UploadImage";
 
-const center = [
+const centerAdmin = [
   { name: "Trẻ em" },
   { name: "Nhân viên" },
   { name: "Trang thiết bị" },
 ];
-const activities = [
+const activitiesAdmin = [
   "Từ thiện",
   "Dã ngoại",
   "Nhận nuôi trẻ",
   "Giới thiệu trẻ",
-  "Phản hồi",
   "Thống kê",
-  "Báo cáo",
 ];
+
+const centerChildren = [{ name: "Trẻ em" }];
+const activitiesChildren = ["Nhận nuôi trẻ", "Giới thiệu trẻ"];
+
+const centerHR = [{ name: "Nhân viên" }];
+const activitiesHR = ["Phản hồi", "Báo cáo"];
+
+const centerLogis = [{ name: "Trang thiết bị" }];
+const activitiesLogis = ["Từ thiện", "Dã ngoại"];
 
 const checkScreen = function (nameScreen) {
   switch (nameScreen) {
+    case "Profile":
+      return "profile";
     case "Tài khoản":
       return "account";
     case "Trẻ em":
@@ -42,11 +52,18 @@ const checkScreen = function (nameScreen) {
       return "introducer";
     case "Nhận nuôi trẻ":
       return "nurturer";
+    case "Dã ngoại":
+      return "picnic";
+    case "Thống kê":
+      return "stat";
   }
 };
 
 const SideMenu = function ({ navigation }) {
   const [info, setInfo] = useState({});
+  const [role, setRole] = useState("");
+  const [center, setCenter] = useState([]);
+  const [activities, setActivities] = useState([]);
 
   const getInfo = async function () {
     const token = await AsyncStorage.getItem("accessToken");
@@ -65,12 +82,31 @@ const SideMenu = function ({ navigation }) {
       );
       const result = await response.json();
       setInfo(result.data);
+      setRole(result.data.roles[0].roleName);
+      switch (role) {
+        case "ROLE_ADMIN":
+          setCenter(centerAdmin);
+          setActivities(activitiesAdmin);
+          break;
+        case "ROLE_MANAGER_CHILDREN":
+          setCenter(centerChildren);
+          setActivities(activitiesChildren);
+          break;
+        case "ROLE_MANAGER_HR":
+          setCenter(centerHR);
+          setActivities(activitiesHR);
+          break;
+        case "ROLE_MANAGER_LOGISTIC":
+          setCenter(centerLogis);
+          setActivities(activitiesLogis);
+          break;
+      }
     } catch (e) {
       throw new Error(e);
     }
   };
 
-  useEffect(getInfo, []);
+  useEffect(getInfo);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0F1E80" }}>
@@ -80,46 +116,65 @@ const SideMenu = function ({ navigation }) {
         <UploadImage img={info.image} />
       </View>
       <View style={styles.navContainer}>
+        {role === "ROLE_ADMIN" ? (
+          <TouchableOpacity
+            style={styles.touch}
+            onPress={() => navigation.navigate(checkScreen("Tài khoản"))}
+          >
+            <Text style={styles.text}>Tài khoản</Text>
+          </TouchableOpacity>
+        ) : (
+          <></>
+        )}
         <TouchableOpacity
           style={styles.touch}
-          onPress={() => navigation.navigate(checkScreen("Tài khoản"))}
+          onPress={() => navigation.navigate(checkScreen("Profile"))}
         >
-          <Text style={styles.text}>Tài khoản</Text>
+          <Text style={styles.text}>Profile</Text>
         </TouchableOpacity>
         <Text h4 style={styles.textHead}>
           Trung tâm
         </Text>
-        <FlatList
-          data={center}
-          keyExtractor={(center) => center.name}
-          renderItem={({ item }) => {
-            return (
-              <TouchableOpacity
-                style={styles.touch}
-                onPress={() => navigation.navigate(checkScreen(item.name))}
-              >
-                <Text style={styles.text}>{item.name}</Text>
-              </TouchableOpacity>
-            );
-          }}
-        />
+        {center ? (
+          <FlatList
+            data={center}
+            keyExtractor={(center) => center.name}
+            renderItem={({ item }) => {
+              return (
+                <TouchableOpacity
+                  style={styles.touch}
+                  onPress={() => navigation.navigate(checkScreen(item.name))}
+                >
+                  <Text style={styles.text}>{item.name}</Text>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        ) : (
+          <ActivityIndicator />
+        )}
+
         <Text h4 style={styles.textHead}>
           Hoạt động
         </Text>
-        <FlatList
-          data={activities}
-          keyExtractor={(activity) => activity}
-          renderItem={({ item }) => {
-            return (
-              <TouchableOpacity
-                style={styles.touch}
-                onPress={() => navigation.navigate(checkScreen(item))}
-              >
-                <Text style={styles.text}>{item}</Text>
-              </TouchableOpacity>
-            );
-          }}
-        />
+        {activities ? (
+          <FlatList
+            data={activities}
+            keyExtractor={(activity) => activity}
+            renderItem={({ item }) => {
+              return (
+                <TouchableOpacity
+                  style={styles.touch}
+                  onPress={() => navigation.navigate(checkScreen(item))}
+                >
+                  <Text style={styles.text}>{item}</Text>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        ) : (
+          <ActivityIndicator />
+        )}
         <TouchableOpacity
           style={styles.touchLogout}
           onPress={() => navigation.navigate("auth")}
