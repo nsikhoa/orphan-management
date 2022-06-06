@@ -162,20 +162,6 @@ const StaffCreateScreen = function ({ navigation }) {
             setDateOfBirth(convertDateToString(selectedDate));
           }}
         />
-
-        {/* <Text style={styles.label}>Loại nhân viên: </Text>
-        <View>
-          <Picker
-            selectedValue={typeStaff}
-            onValueChange={(itemValue, itemIndex) => {
-              setTypeStaff(itemValue);
-            }}
-            itemStyle={{ height: 120 }}
-          >
-            <Picker.Item label="Nhân viên" value="NhanVien" />
-            <Picker.Item label="Cán bộ" value="CanBo" />
-          </Picker>
-        </View> */}
       </ScrollView>
       <Button
         title="Thêm nhân viên"
