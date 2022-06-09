@@ -39,6 +39,7 @@ import ChildrenStatistic from "./src/screens/statistic/ChildrenStatistic";
 import AccountStatistic from "./src/screens/statistic/AccountStatistic";
 import SideMenu from "./src/components/SideMenu";
 import HeaderEl from "./src/components/HeaderEl";
+import { Ionicons } from "@expo/vector-icons";
 
 const loginStack = createStackNavigator(
   {
@@ -77,6 +78,7 @@ const header = function (title) {
     headerTitleStyle: {
       color: "#fff",
     },
+    tabBarIcon: <Ionicons name="stats-chart" size={24} color="black" />,
   };
 };
 
