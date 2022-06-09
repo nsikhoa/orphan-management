@@ -257,6 +257,7 @@ const appDrawer = createDrawerNavigator(
     introducer: introducerStack,
     nurturer: nurturerStack,
     picnic: picnicStack,
+    profile: profileStack,
     stat: statBottom,
   },
   {
