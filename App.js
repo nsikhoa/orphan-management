@@ -31,7 +31,10 @@ import AccountListScreen from "./src/screens/account/AccountListScreen";
 import AccountCreateScreen from "./src/screens/account/AccountCreateScreen";
 import AccountDetailScreen from "./src/screens/account/AccountDetailScreen";
 import AccountListDeleteScreen from "./src/screens/account/AccountListDeleteScreen";
-// import PicnicListScreen from "./src/screens/picnic/PicnicListScreen";
+import PicnicListScreen from "./src/screens/picnic/PicnicListScreen";
+import PicnicCreateScreen from "./src/screens/picnic/PicnicCreateScreen";
+import PicnicDetailScreen from "./src/screens/picnic/PicnicDetailScreen";
+import PicnicUpdateScreen from "./src/screens/picnic/PicnicUpdateScreen";
 import ProfileDetailScreen from "./src/screens/profile/ProfileDetailScreen";
 import ProfileUpdateScreen from "./src/screens/profile/ProfileUpdateScreen";
 import ProfileChangePasswordScreen from "./src/screens/profile/ProfileChangePasswordScreen";
@@ -199,24 +202,24 @@ const nurturerStack = createStackNavigator({
   },
 });
 
-// const picnicStack = createStackNavigator({
-//   PicnicList: {
-//     screen: PicnicListScreen,
-//     navigationOptions: ({ navigation }) => mainHeader(navigation, "Dã ngoại"),
-//   },
-//   // PicnicCreate: {
-//   //   screen: PicnicCreateScreen,
-//   //   navigationOptions: () => header("Thêm người nhận nuôi"),
-//   // },
-//   // PicnicDetail: {
-//   //   screen: PicnicDetailScreen,
-//   //   navigationOptions: () => header("Chi tiết người nhận nuôi"),
-//   // },
-//   // PicnicUpdate: {
-//   //   screen: PicnicUpdateScreen,
-//   //   navigationOptions: () => header("Cập nhật người nhận nuôi"),
-//   // },
-// });
+const picnicStack = createStackNavigator({
+  PicnicList: {
+    screen: PicnicListScreen,
+    navigationOptions: ({ navigation }) => mainHeader(navigation, "Dã ngoại"),
+  },
+  PicnicCreate: {
+    screen: PicnicCreateScreen,
+    navigationOptions: () => header("Thêm người nhận nuôi"),
+  },
+  PicnicDetail: {
+    screen: PicnicDetailScreen,
+    navigationOptions: () => header("Chi tiết người nhận nuôi"),
+  },
+  PicnicUpdate: {
+    screen: PicnicUpdateScreen,
+    navigationOptions: () => header("Cập nhật người nhận nuôi"),
+  },
+});
 
 const profileStack = createStackNavigator({
   ProfileDetail: {
@@ -247,14 +250,13 @@ const statBottom = createBottomTabNavigator({
 
 const appDrawer = createDrawerNavigator(
   {
-    profile: profileStack,
     account: accountStack,
     staffs: staffStack,
     children: childrenStack,
     furniture: furnitureStack,
     introducer: introducerStack,
     nurturer: nurturerStack,
-    // picnic: picnicStack,
+    picnic: picnicStack,
     stat: statBottom,
   },
   {
@@ -287,34 +289,3 @@ const styles = StyleSheet.create({
 });
 
 export default createAppContainer(app);
-
-// const switchNavigator = createSwitchNavigator({
-//   loginFlow: loginStack,
-//   mainFlow: createBottomTabNavigator({
-//     childrenFlow: childrenStack,
-//   }),
-// });
-
-// const childrenStack = createStackNavigator({
-//   ChildrenList: ChildrenListScreen,
-//   ChildrenDetail: ChildrenDetailScreen,
-//   ChildrenCreate: ChildrenCreateScreen,
-//   ChildrenUpdate: ChildrenUpdateScreen,
-// });
-
-// const MainStack = createStackNavigator({
-//   Account: AccountScreen,
-//   Children: {
-//     screen: childrenStack,
-//   },
-// });
-
-// const appDrawer = createDrawerNavigator(
-//   {
-//     drawer: MainStack,
-//   },
-//   {
-//     contentComponent: SideMenu,
-//     drawerWidth: (Dimensions.get("window").width * 3) / 4,
-//   }
-// );
