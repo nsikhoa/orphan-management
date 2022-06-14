@@ -52,6 +52,8 @@ const checkScreen = function (nameScreen) {
       return "introducer";
     case "Nhận nuôi trẻ":
       return "nurturer";
+    case "Từ thiện":
+      return "charity";
     case "Dã ngoại":
       return "picnic";
     case "Thống kê":
