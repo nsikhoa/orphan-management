@@ -69,9 +69,6 @@ const PicnicDetailScreen = function ({ navigation }) {
           <Text style={styles.text}>Địa điểm: {picnic.address}</Text>
           <Text style={styles.text}>Nội dung sự kiện: {picnic.content}</Text>
           <Text style={styles.text}>Chi phí: {picnic.money} vnd</Text>
-          <Text style={styles.text}>
-            Sự kiện: {picnic.isCompleted ? "Chưa diễn ra" : "Đã diễn ra"}
-          </Text>
         </ScrollView>
       ) : (
         <></>
