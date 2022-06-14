@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { Button } from "react-native-elements";
 import ListItem from "../../components/ListItem";
@@ -17,7 +19,17 @@ const NurturerListScreen = function ({ navigation }) {
   const [nurturers, setNurturer] = useState([]);
   const [page, setPage] = useState(1);
   const [code, setCode] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  function checkCodeRenderLoading() {
+    if (code !== 404)
+      return (
+        <View>
+          <ActivityIndicator />
+        </View>
+      );
+    return <></>;
+  }
 
   const getNurturers = async function () {
     const token = await AsyncStorage.getItem("accessToken");
@@ -32,13 +44,16 @@ const NurturerListScreen = function ({ navigation }) {
     };
     try {
       const response = await fetch(
-        `https://orphanmanagement.herokuapp.com/api/v1/manager/nurturer/all`,
+        `https://orphanmanagement.herokuapp.com/api/v1/manager/nurturer?page=${page}&limit=11`,
         requestOptions
       );
       const result = await response.json();
-      if (isMounted) setNurturer(result.data);
-      setCode(result.code);
-      setIsLoading(true);
+      setCode(result?.code);
+      if (isMounted) {
+        if (result) setNurturer([...nurturers, ...result?.data.result]);
+        else setNurturer([...nurturers]);
+      }
+      setRefreshing(false);
       return () => {
         isMounted = false;
       };
@@ -81,65 +96,53 @@ const NurturerListScreen = function ({ navigation }) {
         text: "OK",
         onPress: () => {
           deleteNurturer(id);
-          getNurturers();
         },
       },
     ]);
   };
 
-  useEffect(getNurturers);
+  useEffect(getNurturers, [page]);
+
+  const handleRefresh = function () {
+    setNurturer([]);
+    setPage(1);
+    setRefreshing(true);
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: "#ECF8FF" }}>
       <View style={styles.container}>
-        <ScrollView>
-          {nurturers ? (
-            nurturers.map((nurturer) => {
-              return (
-                <TouchableOpacity
-                  style={styles.itemContainer}
-                  key={nurturer.id}
-                  onPress={async () => {
-                    await AsyncStorage.setItem(
-                      "nurturerId",
-                      nurturer.id.toString()
-                    );
-                    navigation.navigate("NurturerDetail");
-                  }}
-                >
-                  <ListItem
-                    id={nurturer.id}
-                    key={nurturer.id}
-                    name={nurturer.fullName}
+        <FlatList
+          data={nurturers}
+          ListFooterComponent={checkCodeRenderLoading}
+          onEndReachedThreshold={0.5}
+          onEndReached={() => setPage(page + 1)}
+          renderItem={({ item, index }) => {
+            return (
+              <TouchableOpacity
+                style={styles.itemContainer}
+                key={index}
+                onPress={async () => {
+                  await AsyncStorage.setItem("nurturerId", item.id.toString());
+                  navigation.navigate("NurturerDetail");
+                }}
+              >
+                <ListItem id={item.id} name={item.fullName} />
+
+                <TouchableOpacity onPress={() => createDeleteDialog(item.id)}>
+                  <Feather
+                    style={{ top: 5 }}
+                    name="trash"
+                    size={24}
+                    color="black"
                   />
-                  {/* <Button
-                    title="Delete"
-                    onPress={() => createDeleteDialog(child.id)}
-                  /> */}
-                  <TouchableOpacity
-                    onPress={() => createDeleteDialog(nurturer.id)}
-                  >
-                    <Feather
-                      style={{ top: 5 }}
-                      name="trash"
-                      size={24}
-                      color="black"
-                    />
-                  </TouchableOpacity>
                 </TouchableOpacity>
-              );
-            })
-          ) : (
-            <Text
-              style={{
-                textAlign: "center",
-                fontStyle: "italic",
-                marginTop: 15,
-              }}
-            >
-              Chưa có dữ liệu
-            </Text>
-          )}
-        </ScrollView>
+              </TouchableOpacity>
+            );
+          }}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+        />
         <View
           style={{
             marginTop: 20,

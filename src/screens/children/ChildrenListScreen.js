@@ -22,11 +22,21 @@ const ChildrenListScreen = function ({ navigation }) {
   const [total, setTotal] = useState(0);
   const [code, setCode] = useState(0);
   const [keyword, setKeyword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  function checkCodeRenderLoading() {
+    if (code !== 404)
+      return (
+        <View>
+          <ActivityIndicator />
+        </View>
+      );
+    return <></>;
+  }
 
   const getChildren = async function () {
     const token = await AsyncStorage.getItem("accessToken");
-    // let isMounted = true;
+    let isMounted = true;
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${token}`);
 
@@ -41,15 +51,18 @@ const ChildrenListScreen = function ({ navigation }) {
         requestOptions
       );
       const result = await response.json();
-      setChildren([...children, ...result?.data.result]);
+      setCode(result?.code);
+      if (isMounted) {
+        if (result) setChildren([...children, ...result?.data.result]);
+        else setChildren([...children]);
+      }
+      setRefreshing(false);
       if (result.code === 200) setTotal(result.data.total);
       else setTotal(0);
       setCode(result.code);
-      setIsLoading(true);
-      console.log(page);
-      // return () => {
-      //   isMounted = false;
-      // };
+      return () => {
+        isMounted = false;
+      };
       // console.log(children);
     } catch (err) {
       console.error(err);
@@ -125,7 +138,6 @@ const ChildrenListScreen = function ({ navigation }) {
         text: "OK",
         onPress: () => {
           deleteChild(id);
-          getChildren();
         },
       },
     ]);
@@ -134,6 +146,13 @@ const ChildrenListScreen = function ({ navigation }) {
   useEffect(() => {
     getChildren();
   }, [page]);
+
+  const handleRefresh = function () {
+    setChildren([]);
+    setPage(1);
+    setRefreshing(true);
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: "#ECF8FF" }}>
       <View style={styles.container}>
@@ -162,15 +181,9 @@ const ChildrenListScreen = function ({ navigation }) {
         <FlatList
           data={children}
           // keyExtractor={(child) => child.id}
+          ListFooterComponent={checkCodeRenderLoading}
           onEndReachedThreshold={0.5}
           onEndReached={() => setPage(page + 1)}
-          ListFooterComponent={() => {
-            return (
-              <View>
-                <ActivityIndicator />
-              </View>
-            );
-          }}
           renderItem={({ item, index }) => {
             return (
               <TouchableOpacity
@@ -197,6 +210,8 @@ const ChildrenListScreen = function ({ navigation }) {
               </TouchableOpacity>
             );
           }}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
         />
         <View
           style={{

@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { Button } from "react-native-elements";
 import ListItem from "../../components/ListItem";
@@ -15,6 +17,19 @@ import { Feather } from "@expo/vector-icons";
 
 const FurnitureListScreen = ({ navigation }) => {
   const [furnitures, setFurnitures] = useState([]);
+  const [page, setPage] = useState(1);
+  const [code, setCode] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+
+  function checkCodeRenderLoading() {
+    if (code !== 404)
+      return (
+        <View>
+          <ActivityIndicator />
+        </View>
+      );
+    return <></>;
+  }
 
   const getFurniture = async function () {
     const token = await AsyncStorage.getItem("accessToken");
@@ -29,22 +44,25 @@ const FurnitureListScreen = ({ navigation }) => {
     };
     try {
       const response = await fetch(
-        "https://orphanmanagement.herokuapp.com/api/v1/manager/furniture/all",
+        `https://orphanmanagement.herokuapp.com/api/v1/manager/furniture?page=${page}&limit=11`,
         requestOptions
       );
       const result = await response.json();
-      if (isMounted) setFurnitures(result.data);
-      // setCode(result.code);
+      setCode(result?.code);
+      if (isMounted) {
+        if (result) setFurnitures([...furnitures, ...result?.data.result]);
+        else setFurnitures([...furnitures]);
+      }
+      setRefreshing(false);
       return () => {
         isMounted = false;
       };
-      // console.log(children);
     } catch (err) {
       throw new Error(err);
     }
   };
 
-  useEffect(getFurniture);
+  useEffect(getFurniture, [page]);
 
   const deleteFurniture = async function (id) {
     const token = await AsyncStorage.getItem("accessToken");
@@ -82,54 +100,51 @@ const FurnitureListScreen = ({ navigation }) => {
     ]);
   };
 
+  const handleRefresh = function () {
+    setFurnitures([]);
+    setPage(1);
+    setRefreshing(true);
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: "#ECF8FF" }}>
       <View style={styles.container}>
-        <ScrollView>
-          {furnitures ? (
-            furnitures.map((furniture) => {
-              return (
+        <FlatList
+          data={furnitures}
+          ListFooterComponent={checkCodeRenderLoading}
+          onEndReachedThreshold={0.5}
+          onEndReached={() => setPage(page + 1)}
+          renderItem={({ item, index }) => {
+            return (
+              <TouchableOpacity
+                style={styles.itemContainer}
+                key={index}
+                onPress={async () => {
+                  await AsyncStorage.setItem(
+                    "furnitureId",
+                    item.furnitureId.toString()
+                  );
+                  navigation.navigate("FurnitureDetail");
+                }}
+              >
+                <ListItem id={item.furnitureId} name={item.nameFurniture} />
+
                 <TouchableOpacity
-                  style={styles.itemContainer}
-                  key={furniture.furnitureId}
-                  onPress={async () => {
-                    await AsyncStorage.setItem(
-                      "furnitureId",
-                      furniture.furnitureId.toString()
-                    );
-                    navigation.navigate("FurnitureDetail");
-                  }}
+                  onPress={() => createDeleteDialog(item.furnitureId)}
                 >
-                  <ListItem
-                    id={furniture.furnitureId}
-                    key={furniture.furnitureId}
-                    name={furniture.nameFurniture}
+                  <Feather
+                    style={{ top: 5 }}
+                    name="trash"
+                    size={24}
+                    color="black"
                   />
-                  <TouchableOpacity
-                    onPress={() => createDeleteDialog(furniture.furnitureId)}
-                  >
-                    <Feather
-                      style={{ top: 5 }}
-                      name="trash"
-                      size={24}
-                      color="black"
-                    />
-                  </TouchableOpacity>
                 </TouchableOpacity>
-              );
-            })
-          ) : (
-            <Text
-              style={{
-                textAlign: "center",
-                fontStyle: "italic",
-                marginTop: 15,
-              }}
-            >
-              Chưa có dữ liệu
-            </Text>
-          )}
-        </ScrollView>
+              </TouchableOpacity>
+            );
+          }}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+        />
         <View
           style={{
             marginTop: 20,
