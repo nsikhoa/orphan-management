@@ -53,7 +53,7 @@ const PicnicCreateScreen = function ({ navigation }) {
             )
           );
         else alert(result.message);
-      } else if (result.code == 500) {
+      } else if (result.status == 500) {
         Alert.alert("Thông báo", "Thêm không thành công");
       } else
         Alert.alert("Thông báo", "Thêm thành công", [
