@@ -20,7 +20,17 @@ const PicnicListScreen = function ({ navigation }) {
   const [picnic, setPicnic] = useState([]);
   const [page, setPage] = useState(1);
   const [code, setCode] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  function checkCodeRenderLoading() {
+    if (code !== 404)
+      return (
+        <View>
+          <ActivityIndicator />
+        </View>
+      );
+    return <></>;
+  }
 
   const getPicnic = async function () {
     const token = await AsyncStorage.getItem("accessToken");
@@ -35,19 +45,20 @@ const PicnicListScreen = function ({ navigation }) {
     };
     try {
       const response = await fetch(
-        `https://orphanmanagement.herokuapp.com/api/v1/manager/picnic/all`,
+        `https://orphanmanagement.herokuapp.com/api/v1/manager/picnic?page=${page}&limit=11`,
         requestOptions
       );
       const result = await response.json();
-      //   setPicnic([...picnic, ...result?.data.result]);
-      setPicnic(result?.data);
-      //   if (result.code === 200) setTotal(result.data.total);
-      //   else setTotal(0);
-      setIsLoading(true);
+      setCode(result?.code);
+      if (isMounted) {
+        if (result) setPicnic([...picnic, ...result?.data.result]);
+        else setPicnic([...picnic]);
+      }
+      setRefreshing(false);
+
       return () => {
         isMounted = false;
       };
-      // console.log(children);
     } catch (err) {
       console.error(err);
     }
@@ -86,7 +97,6 @@ const PicnicListScreen = function ({ navigation }) {
         text: "OK",
         onPress: () => {
           deletePicnic(id);
-          getPicnic();
         },
       },
     ]);
@@ -94,14 +104,20 @@ const PicnicListScreen = function ({ navigation }) {
 
   useEffect(() => {
     getPicnic();
-  });
+  }, [page]);
+
+  const handleRefresh = function () {
+    setPicnic([]);
+    setPage(1);
+    setRefreshing(true);
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ECF8FF" }}>
       <View style={styles.container}>
         <FlatList
           data={picnic}
-          // keyExtractor={(child) => child.id}
+          ListFooterComponent={checkCodeRenderLoading}
           onEndReachedThreshold={0.5}
           onEndReached={() => setPage(page + 1)}
           renderItem={({ item, index }) => {
@@ -115,10 +131,7 @@ const PicnicListScreen = function ({ navigation }) {
                 }}
               >
                 <ListItem id={item.id} name={item.namePicnic} />
-                {/* <Button
-                    title="Delete"
-                    onPress={() => createDeleteDialog(item.id)}
-                  /> */}
+
                 <TouchableOpacity onPress={() => createDeleteDialog(item.id)}>
                   <Feather
                     style={{ top: 5 }}
@@ -130,6 +143,8 @@ const PicnicListScreen = function ({ navigation }) {
               </TouchableOpacity>
             );
           }}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
         />
         <View
           style={{

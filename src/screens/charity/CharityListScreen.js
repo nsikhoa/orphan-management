@@ -41,7 +41,7 @@ const CharityListScreen = function ({ navigation }) {
     };
     try {
       const response = await fetch(
-        `https://orphanmanagement.herokuapp.com/api/v1/manager/charity?page=${page}&limit=10`,
+        `https://orphanmanagement.herokuapp.com/api/v1/manager/charity?page=${page}&limit=11`,
         requestOptions
       );
       const result = await response.json();
@@ -92,7 +92,6 @@ const CharityListScreen = function ({ navigation }) {
         text: "OK",
         onPress: () => {
           deleteCharity(id);
-          getCharity();
         },
       },
     ]);
@@ -113,6 +112,7 @@ const CharityListScreen = function ({ navigation }) {
       <View style={styles.container}>
         <FlatList
           data={charity}
+          keyExtractor={(charity) => charity.id}
           onEndReachedThreshold={0.5}
           ListFooterComponent={checkCodeRenderLoading}
           onEndReached={() => setPage(page + 1)}
@@ -120,7 +120,6 @@ const CharityListScreen = function ({ navigation }) {
             return (
               <TouchableOpacity
                 style={styles.itemContainer}
-                key={index}
                 onPress={async () => {
                   await AsyncStorage.setItem("charityId", item.id.toString());
                   navigation.navigate("CharityDetail");

@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { Button } from "react-native-elements";
 import ListItem from "../../components/ListItem";
-// import { Context } from "../../context/appContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather } from "@expo/vector-icons";
 
@@ -17,7 +18,17 @@ const IntroducerListScreen = function ({ navigation }) {
   const [introducers, setIntroducers] = useState([]);
   const [page, setPage] = useState(1);
   const [code, setCode] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  function checkCodeRenderLoading() {
+    if (code !== 404)
+      return (
+        <View>
+          <ActivityIndicator />
+        </View>
+      );
+    return <></>;
+  }
 
   const getIntroducers = async function () {
     const token = await AsyncStorage.getItem("accessToken");
@@ -32,17 +43,19 @@ const IntroducerListScreen = function ({ navigation }) {
     };
     try {
       const response = await fetch(
-        `https://orphanmanagement.herokuapp.com/api/v1/manager/introducer/all`,
+        `https://orphanmanagement.herokuapp.com/api/v1/manager/introducer?page=${page}&limit=11`,
         requestOptions
       );
       const result = await response.json();
-      if (isMounted) setIntroducers(result.data);
-      setCode(result.code);
-      setIsLoading(true);
+      setCode(result?.code);
+      if (isMounted) {
+        if (result) setIntroducers([...introducers, ...result?.data.result]);
+        else setIntroducers([...introducers]);
+      }
+      setRefreshing(false);
       return () => {
         isMounted = false;
       };
-      // console.log(children);
     } catch (err) {
       throw new Error(err);
     }
@@ -81,65 +94,56 @@ const IntroducerListScreen = function ({ navigation }) {
         text: "OK",
         onPress: () => {
           deleteIntroducer(id);
-          getIntroducers();
         },
       },
     ]);
   };
 
-  useEffect(getIntroducers);
+  useEffect(getIntroducers, [page]);
+
+  const handleRefresh = function () {
+    setNurturer([]);
+    setPage(1);
+    setRefreshing(true);
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: "#ECF8FF" }}>
       <View style={styles.container}>
-        <ScrollView>
-          {introducers ? (
-            introducers.map((introducer) => {
-              return (
-                <TouchableOpacity
-                  style={styles.itemContainer}
-                  key={introducer.id}
-                  onPress={async () => {
-                    await AsyncStorage.setItem(
-                      "introducerId",
-                      introducer.id.toString()
-                    );
-                    navigation.navigate("IntroducerDetail");
-                  }}
-                >
-                  <ListItem
-                    id={introducer.id}
-                    key={introducer.id}
-                    name={introducer.fullName}
+        <FlatList
+          data={introducers}
+          ListFooterComponent={checkCodeRenderLoading}
+          onEndReachedThreshold={0.5}
+          onEndReached={() => setPage(page + 1)}
+          renderItem={({ item, index }) => {
+            return (
+              <TouchableOpacity
+                style={styles.itemContainer}
+                key={index}
+                onPress={async () => {
+                  await AsyncStorage.setItem(
+                    "introducerId",
+                    item.id.toString()
+                  );
+                  navigation.navigate("IntroducerDetail");
+                }}
+              >
+                <ListItem id={item.id} name={item.fullName} />
+
+                <TouchableOpacity onPress={() => createDeleteDialog(item.id)}>
+                  <Feather
+                    style={{ top: 5 }}
+                    name="trash"
+                    size={24}
+                    color="black"
                   />
-                  {/* <Button
-                    title="Delete"
-                    onPress={() => createDeleteDialog(child.id)}
-                  /> */}
-                  <TouchableOpacity
-                    onPress={() => createDeleteDialog(introducer.id)}
-                  >
-                    <Feather
-                      style={{ top: 5 }}
-                      name="trash"
-                      size={24}
-                      color="black"
-                    />
-                  </TouchableOpacity>
                 </TouchableOpacity>
-              );
-            })
-          ) : (
-            <Text
-              style={{
-                textAlign: "center",
-                fontStyle: "italic",
-                marginTop: 15,
-              }}
-            >
-              Chưa có dữ liệu
-            </Text>
-          )}
-        </ScrollView>
+              </TouchableOpacity>
+            );
+          }}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+        />
         <View
           style={{
             marginTop: 20,
