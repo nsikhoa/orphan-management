@@ -55,7 +55,7 @@ const NurturerCreateScreen = function ({ navigation }) {
       );
       const result = await response.json();
       console.log(result);
-      if (result.code == 400) {
+      if (result.status == 400) {
         if (result.message.includes(":"))
           alert(
             result.message.slice(
@@ -64,6 +64,8 @@ const NurturerCreateScreen = function ({ navigation }) {
             )
           );
         else alert(result.message);
+      } else if (result.status === 500) {
+        Alert.alert("Thông báo", "Thêm không thành công");
       } else
         Alert.alert("Thông báo", "Thêm thành công", [
           {
