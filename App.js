@@ -38,6 +38,10 @@ import PicnicUpdateScreen from "./src/screens/picnic/PicnicUpdateScreen";
 import ProfileDetailScreen from "./src/screens/profile/ProfileDetailScreen";
 import ProfileUpdateScreen from "./src/screens/profile/ProfileUpdateScreen";
 import ProfileChangePasswordScreen from "./src/screens/profile/ProfileChangePasswordScreen";
+import CharityListScreen from "./src/screens/charity/CharityListScreen";
+import CharityDetailScreen from "./src/screens/charity/CharityDetailScreen";
+import CharityCreateScreen from "./src/screens/charity/CharityCreateScreen";
+import CharityUpdateScreen from "./src/screens/charity/CharityUpdateScreen";
 import ChildrenStatistic from "./src/screens/statistic/ChildrenStatistic";
 import AccountStatistic from "./src/screens/statistic/AccountStatistic";
 import SideMenu from "./src/components/SideMenu";
@@ -209,15 +213,34 @@ const picnicStack = createStackNavigator({
   },
   PicnicCreate: {
     screen: PicnicCreateScreen,
-    navigationOptions: () => header("Thêm người nhận nuôi"),
+    navigationOptions: () => header("Thêm thông tin dã ngoại"),
   },
   PicnicDetail: {
     screen: PicnicDetailScreen,
-    navigationOptions: () => header("Chi tiết người nhận nuôi"),
+    navigationOptions: () => header("Chi tiết sự kiện dã ngoại"),
   },
   PicnicUpdate: {
     screen: PicnicUpdateScreen,
-    navigationOptions: () => header("Cập nhật người nhận nuôi"),
+    navigationOptions: () => header("Cập nhật thông tin dã ngoại"),
+  },
+});
+
+const charityStack = createStackNavigator({
+  CharityList: {
+    screen: CharityListScreen,
+    navigationOptions: ({ navigation }) => mainHeader(navigation, "Từ thiện"),
+  },
+  CharityCreate: {
+    screen: CharityCreateScreen,
+    navigationOptions: () => header("Thêm sự kiện từ thiện"),
+  },
+  CharityDetail: {
+    screen: CharityDetailScreen,
+    navigationOptions: () => header("Chi tiết sự kiện từ thiện"),
+  },
+  CharityUpdate: {
+    screen: CharityUpdateScreen,
+    navigationOptions: () => header("Cập nhật sự kiện từ thiện"),
   },
 });
 
@@ -250,6 +273,7 @@ const statBottom = createBottomTabNavigator({
 
 const appDrawer = createDrawerNavigator(
   {
+    profile: profileStack,
     account: accountStack,
     staffs: staffStack,
     children: childrenStack,
@@ -257,8 +281,8 @@ const appDrawer = createDrawerNavigator(
     introducer: introducerStack,
     nurturer: nurturerStack,
     picnic: picnicStack,
-    profile: profileStack,
     stat: statBottom,
+    charity: charityStack,
   },
   {
     contentComponent: SideMenu,
