@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "CYF",
-    "slug": "cyf",
+    "name": "CYF1",
+    "slug": "cyf1",
     "owner": "nsikhoa",
-    "description": "CYF app",
+    "description": "CYF1 app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/mainicon.png",

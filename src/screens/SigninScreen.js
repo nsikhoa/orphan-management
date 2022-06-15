@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, StyleSheet, ImageBackground, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ImageBackground,
+  ScrollView,
+  Alert,
+} from "react-native";
 import { Text, Input, Button } from "react-native-elements";
 import Spacer from "../components/Spacer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -39,9 +45,9 @@ const SigninScreen = function ({ navigation }) {
         await AsyncStorage.setItem("accessToken", result.data.token);
         navigation.navigate("drawer");
       } else if (result.status == 500) {
-        alert("Lỗi hệ thống!");
+        Alert.alert("Thông báo", "Lỗi hệ thống!");
       } else {
-        alert("Sai mật khẩu hoặc tên đăng nhập!");
+        Alert.alert("Thông báo", "Sai mật khẩu hoặc tên đăng nhập!");
       }
     } catch (e) {
       throw new Error(e);
@@ -132,7 +138,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: "#FFF",
+    backgroundColor: "#ECF5FF",
     // marginBottom: 100,
     // padding: 10,
   },

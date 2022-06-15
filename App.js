@@ -31,6 +31,7 @@ import AccountListScreen from "./src/screens/account/AccountListScreen";
 import AccountCreateScreen from "./src/screens/account/AccountCreateScreen";
 import AccountDetailScreen from "./src/screens/account/AccountDetailScreen";
 import AccountListDeleteScreen from "./src/screens/account/AccountListDeleteScreen";
+import AccountUpdateScreen from "./src/screens/account/AccountUpdateScreen";
 import PicnicListScreen from "./src/screens/picnic/PicnicListScreen";
 import PicnicCreateScreen from "./src/screens/picnic/PicnicCreateScreen";
 import PicnicDetailScreen from "./src/screens/picnic/PicnicDetailScreen";
@@ -105,6 +106,10 @@ const accountStack = createStackNavigator({
   AccountDetail: {
     screen: AccountDetailScreen,
     navigationOptions: () => header("Chi tiết tài khoản"),
+  },
+  AccountUpdate: {
+    screen: AccountUpdateScreen,
+    navigationOptions: () => header("Cập nhật tài khoản"),
   },
 });
 

@@ -111,6 +111,7 @@ const FurnitureListScreen = ({ navigation }) => {
       <View style={styles.container}>
         <FlatList
           data={furnitures}
+          keyExtractor={(furniture) => furniture.furnitureId}
           ListFooterComponent={checkCodeRenderLoading}
           onEndReachedThreshold={0.5}
           onEndReached={() => setPage(page + 1)}

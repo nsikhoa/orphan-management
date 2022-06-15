@@ -179,7 +179,10 @@ const SideMenu = function ({ navigation }) {
         )}
         <TouchableOpacity
           style={styles.touchLogout}
-          onPress={() => navigation.navigate("auth")}
+          onPress={() => {
+            navigation.navigate("auth");
+            AsyncStorage.removeItem("accessToken");
+          }}
         >
           <MaterialIcons
             name="logout"
