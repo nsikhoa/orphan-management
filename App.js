@@ -45,6 +45,7 @@ import CharityCreateScreen from "./src/screens/charity/CharityCreateScreen";
 import CharityUpdateScreen from "./src/screens/charity/CharityUpdateScreen";
 import ChildrenStatistic from "./src/screens/statistic/ChildrenStatistic";
 import AccountStatistic from "./src/screens/statistic/AccountStatistic";
+import FinanceStatistic from "./src/screens/statistic/FinanceStatistic";
 import SideMenu from "./src/components/SideMenu";
 import HeaderEl from "./src/components/HeaderEl";
 import { Ionicons } from "@expo/vector-icons";
@@ -273,6 +274,10 @@ const statBottom = createBottomTabNavigator({
   AccountStat: {
     screen: AccountStatistic,
     navigationOptions: () => header("Thống kê tài khoản người dùng"),
+  },
+  FinanceStat: {
+    screen: FinanceStatistic,
+    navigationOptions: () => header("Thống kê tài chính"),
   },
 });
 
