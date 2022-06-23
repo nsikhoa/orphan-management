@@ -31,6 +31,7 @@ import AccountListScreen from "./src/screens/account/AccountListScreen";
 import AccountCreateScreen from "./src/screens/account/AccountCreateScreen";
 import AccountDetailScreen from "./src/screens/account/AccountDetailScreen";
 import AccountListDeleteScreen from "./src/screens/account/AccountListDeleteScreen";
+import AccountUpdateScreen from "./src/screens/account/AccountUpdateScreen";
 import PicnicListScreen from "./src/screens/picnic/PicnicListScreen";
 import PicnicCreateScreen from "./src/screens/picnic/PicnicCreateScreen";
 import PicnicDetailScreen from "./src/screens/picnic/PicnicDetailScreen";
@@ -44,6 +45,7 @@ import CharityCreateScreen from "./src/screens/charity/CharityCreateScreen";
 import CharityUpdateScreen from "./src/screens/charity/CharityUpdateScreen";
 import ChildrenStatistic from "./src/screens/statistic/ChildrenStatistic";
 import AccountStatistic from "./src/screens/statistic/AccountStatistic";
+import FinanceStatistic from "./src/screens/statistic/FinanceStatistic";
 import SideMenu from "./src/components/SideMenu";
 import HeaderEl from "./src/components/HeaderEl";
 import { Ionicons } from "@expo/vector-icons";
@@ -105,6 +107,10 @@ const accountStack = createStackNavigator({
   AccountDetail: {
     screen: AccountDetailScreen,
     navigationOptions: () => header("Chi tiết tài khoản"),
+  },
+  AccountUpdate: {
+    screen: AccountUpdateScreen,
+    navigationOptions: () => header("Cập nhật tài khoản"),
   },
 });
 
@@ -268,6 +274,10 @@ const statBottom = createBottomTabNavigator({
   AccountStat: {
     screen: AccountStatistic,
     navigationOptions: () => header("Thống kê tài khoản người dùng"),
+  },
+  FinanceStat: {
+    screen: FinanceStatistic,
+    navigationOptions: () => header("Thống kê tài chính"),
   },
 });
 

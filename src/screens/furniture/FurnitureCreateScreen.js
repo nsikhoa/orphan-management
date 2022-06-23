@@ -14,7 +14,7 @@ import { Picker } from "@react-native-picker/picker";
 
 const FurnitureCreateScreen = ({ navigation }) => {
   const [nameFurniture, setNameFurniture] = useState("");
-  const [status, setStatus] = useState("GOOD");
+  const [status, setStatus] = useState("");
   const [goodQuantity, setGoodQuantity] = useState(0);
   const [brokenQuantity, setBrokenQuantity] = useState(0);
   const [unitPrice, setUnitPrice] = useState(0);
@@ -82,7 +82,7 @@ const FurnitureCreateScreen = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="Số lượng sử dụng tốt"
-          value={goodQuantity}
+          value={goodQuantity.toString()}
           keyboardType="numeric"
           onChangeText={(goodQuantity) => {
             setGoodQuantity(Number(goodQuantity));
@@ -93,7 +93,7 @@ const FurnitureCreateScreen = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="Số lượng hư hỏng"
-          value={brokenQuantity}
+          value={brokenQuantity.toString()}
           keyboardType="numeric"
           onChangeText={(brokenQuantity) => {
             setBrokenQuantity(Number(brokenQuantity));
@@ -104,26 +104,22 @@ const FurnitureCreateScreen = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="Đơn giá"
-          value={unitPrice}
+          value={unitPrice.toString()}
           keyboardType="numeric"
           onChangeText={(unitPrice) => {
             setUnitPrice(Number(unitPrice));
           }}
         />
 
-        <Text style={styles.label}>Trạng thái: </Text>
-        <View>
-          <Picker
-            selectedValue={status}
-            onValueChange={(itemValue, itemIndex) => {
-              setStatus(itemValue);
-            }}
-            itemStyle={{ height: 120 }}
-          >
-            <Picker.Item label="Sử dụng tốt" value="GOOD" />
-            <Picker.Item label="Có hư hỏng" value="NEED_FIX" />
-          </Picker>
-        </View>
+        <Text style={styles.label}>Ghi chú: </Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Ghi chú"
+          value={status}
+          onChangeText={(status) => {
+            setStatus(status);
+          }}
+        />
       </View>
       <Button title="Thêm trang thiết bị" onPress={createFurniture} />
     </KeyboardAwareScrollView>

@@ -14,7 +14,6 @@ import { Picker } from "@react-native-picker/picker";
 
 const FurnitureUpdateScreen = ({ navigation }) => {
   const furniture = navigation.state.params;
-  console.log(furniture);
   const [nameFurniture, setNameFurniture] = useState(furniture.nameFurniture);
   const [status, setStatus] = useState(furniture.status);
   const [goodQuantity, setGoodQuantity] = useState(furniture.goodQuantity);
@@ -114,19 +113,15 @@ const FurnitureUpdateScreen = ({ navigation }) => {
           }}
         />
 
-        <Text style={styles.label}>Trạng thái: </Text>
-        <View>
-          <Picker
-            selectedValue={status}
-            onValueChange={(itemValue, itemIndex) => {
-              setStatus(itemValue);
-            }}
-            itemStyle={{ height: 120 }}
-          >
-            <Picker.Item label="Sử dụng tốt" value="GOOD" />
-            <Picker.Item label="Có hư hỏng" value="NEED_FIX" />
-          </Picker>
-        </View>
+        <Text style={styles.label}>Tình trạng: </Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Ghi chú"
+          value={status}
+          onChangeText={(status) => {
+            setStatus(status);
+          }}
+        />
       </View>
       <Button title="Cập nhật" onPress={update} />
     </KeyboardAwareScrollView>

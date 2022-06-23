@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Button, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Button,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import { Text } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -70,13 +76,12 @@ const FurnitureDetailScreen = ({ navigation }) => {
             Số lượng hư hỏng: {furniture.brokenQuantity}
           </Text>
           <Text style={styles.text}>Đơn giá: {furniture.unitPrice}</Text>
-          <Text style={styles.text}>
-            Trạng thái:{" "}
-            {furniture.status === "GOOD" ? "Sử dụng tốt" : "Hư hỏng"}
-          </Text>
+          <Text style={styles.text}>Ghi chú: {furniture.status}</Text>
         </View>
       ) : (
-        <></>
+        <View>
+          <ActivityIndicator />
+        </View>
       )}
     </>
   );

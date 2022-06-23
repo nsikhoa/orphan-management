@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { Button } from "react-native-elements";
 import ListItem from "../../components/ListItem";
@@ -15,6 +17,19 @@ import { Feather } from "@expo/vector-icons";
 const AccountListScreen = ({ navigation }) => {
   const [accounts, setAccounts] = useState([]);
   const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [code, setCode] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+
+  function checkCodeRenderLoading() {
+    if (code !== 404)
+      return (
+        <View>
+          <ActivityIndicator />
+        </View>
+      );
+    return <></>;
+  }
 
   const getAccounts = async function () {
     const token = await AsyncStorage.getItem("accessToken");
@@ -29,12 +44,16 @@ const AccountListScreen = ({ navigation }) => {
     };
     try {
       const response = await fetch(
-        "https://orphanmanagement.herokuapp.com/api/v1/admin/all",
+        `https://orphanmanagement.herokuapp.com/api/v1/admin?page=${page}&limit=11`,
         requestOptions
       );
       const result = await response.json();
-      if (isMounted) setAccounts(result.data);
-      if (result.code === 200) setTotal(result.data.length);
+      setCode(result?.code);
+      if (isMounted) {
+        if (result) setAccounts([...accounts, ...result?.data.result]);
+        else setAccounts([...accounts]);
+      }
+      if (result.code === 200) setTotal(result.data.total);
       else setTotal(0);
       return () => {
         isMounted = false;
@@ -84,7 +103,12 @@ const AccountListScreen = ({ navigation }) => {
     );
   };
 
-  useEffect(getAccounts);
+  useEffect(getAccounts, [page]);
+  const handleRefresh = function () {
+    setAccounts([]);
+    setPage(1);
+    setRefreshing(true);
+  };
   return (
     <View style={{ flex: 1, backgroundColor: "#ECF8FF" }}>
       <View style={styles.container}>
@@ -95,51 +119,36 @@ const AccountListScreen = ({ navigation }) => {
           />
         </View>
         {<Text style={{ bottom: 10 }}>Có {total} kết quả</Text>}
-        <ScrollView>
-          {accounts ? (
-            accounts.map((account) => {
-              return (
-                <TouchableOpacity
-                  style={styles.itemContainer}
-                  key={account.id}
-                  onPress={async () => {
-                    await AsyncStorage.setItem(
-                      "accountId",
-                      account.id.toString()
-                    );
-                    navigation.navigate("AccountDetail");
-                  }}
-                >
-                  <ListItem
-                    id={account.id}
-                    key={account.id}
-                    name={account.fullName}
+        <FlatList
+          data={accounts}
+          keyExtractor={(account) => account.id}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={checkCodeRenderLoading}
+          onEndReached={() => setPage(page + 1)}
+          renderItem={({ item, index }) => {
+            return (
+              <TouchableOpacity
+                style={styles.itemContainer}
+                onPress={async () => {
+                  await AsyncStorage.setItem("accountId", item.id.toString());
+                  navigation.navigate("AccountDetail");
+                }}
+              >
+                <ListItem id={item.id} name={item.fullName} />
+                <TouchableOpacity onPress={() => createDeleteDialog(item.id)}>
+                  <Feather
+                    style={{ top: 5 }}
+                    name="trash"
+                    size={24}
+                    color="black"
                   />
-                  <TouchableOpacity
-                    onPress={() => createDeleteDialog(account.id)}
-                  >
-                    <Feather
-                      style={{ top: 5 }}
-                      name="trash"
-                      size={24}
-                      color="black"
-                    />
-                  </TouchableOpacity>
                 </TouchableOpacity>
-              );
-            })
-          ) : (
-            <Text
-              style={{
-                textAlign: "center",
-                fontStyle: "italic",
-                marginTop: 15,
-              }}
-            >
-              Chưa có dữ liệu
-            </Text>
-          )}
-        </ScrollView>
+              </TouchableOpacity>
+            );
+          }}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+        />
         <View
           style={{
             marginTop: 20,

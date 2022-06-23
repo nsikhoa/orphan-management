@@ -15,6 +15,7 @@ import { Picker } from "@react-native-picker/picker";
 
 const ChildrenUpdateScreen = function ({ navigation }) {
   const children = navigation.state.params;
+  // console.log(children);
 
   const [_date, _month, _year] = children.dateOfBirth
     ? children.dateOfBirth.split("/")
@@ -35,12 +36,13 @@ const ChildrenUpdateScreen = function ({ navigation }) {
   const [gender, setGender] = useState(children.gender);
   const [status, setStatus] = useState(children.status);
   const [dateOfBirth, setDateOfBirth] = useState(children.dateOfBirth);
-  const [adoptiveDate, setAdoptiveDate] = useState(children.adoptiveDate);
+  const [adoptiveDate, setAdoptiveDate] = useState(children.adoptiveDate || "");
   const [introductoryDate, setIntroductoryDate] = useState(
-    children.introductoryDate
+    children.introductoryDate || ""
   );
-  const [introducerId, setIntroducerId] = useState(children.introducerId);
-  const [nurturerId, setNurturerId] = useState(children.nurturerId);
+  const [introducerId, setIntroducerId] = useState(children.introducerId || 0);
+  const [nurturerId, setNurturerId] = useState(children.nurturerId || 0);
+  const [image, setImage] = useState(children.image);
 
   const update = async function () {
     const id = await AsyncStorage.getItem("childId");
@@ -50,6 +52,7 @@ const ChildrenUpdateScreen = function ({ navigation }) {
     myHeaders.append("Content-Type", "application/json");
 
     var raw = JSON.stringify({
+      image,
       fullName,
       gender,
       dateOfBirth,
@@ -57,8 +60,9 @@ const ChildrenUpdateScreen = function ({ navigation }) {
       introductoryDate,
       introducerId,
       nurturerId,
-      status,
+      // status,
     });
+    console.log(raw);
 
     var requestOptions = {
       method: "PUT",
