@@ -102,7 +102,7 @@ const IntroducerListScreen = function ({ navigation }) {
   useEffect(getIntroducers, [page]);
 
   const handleRefresh = function () {
-    setNurturer([]);
+    setIntroducers([]);
     setPage(1);
     setRefreshing(true);
   };

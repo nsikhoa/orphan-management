@@ -11,7 +11,7 @@ const BarChartFinance = ({ picnic, furniture, charity, name }) => {
           labels: ["Từ thiện", "Dã ngoại", "Trang thiết bị"],
           datasets: [
             {
-              data: [charity / 100, picnic / 100, furniture / 100],
+              data: [charity / 1000, picnic / 1000, furniture / 1000],
             },
           ],
         }}
@@ -22,7 +22,7 @@ const BarChartFinance = ({ picnic, furniture, charity, name }) => {
           backgroundColor: "#1cc910",
           backgroundGradientFrom: "#eff3ff",
           backgroundGradientTo: "#efefef",
-          decimalPlaces: 0,
+          decimalPlaces: 1,
           color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
           style: {
             borderRadius: 12,
@@ -35,7 +35,7 @@ const BarChartFinance = ({ picnic, furniture, charity, name }) => {
         }}
       />
       <Text style={styles.header}>
-        {name} ({"số tiền x 100"})
+        {name} ({"số tiền x 1000"})
       </Text>
     </>
   );

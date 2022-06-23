@@ -156,7 +156,7 @@ const ChildrenListScreen = function ({ navigation }) {
   return (
     <View style={{ flex: 1, backgroundColor: "#ECF8FF" }}>
       <View style={styles.container}>
-        <View style={{ flexDirection: "row" }}>
+        {/* <View style={{ flexDirection: "row" }}>
           <TextInput
             style={styles.input}
             placeholder="Nhập tên cần tìm kiếm"
@@ -176,7 +176,7 @@ const ChildrenListScreen = function ({ navigation }) {
           >
             <Feather name="search" size={41} color="black" />
           </TouchableOpacity>
-        </View>
+        </View> */}
         {<Text style={{ bottom: 10 }}>Có {total} kết quả</Text>}
         <FlatList
           data={children}

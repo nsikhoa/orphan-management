@@ -11,7 +11,7 @@ import Spacer from "../components/Spacer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const image = {
-  uri: "https://s3-alpha-sig.figma.com/img/d2aa/e34c/32bf098316c8b1bfdb4dcce09baed58a?Expires=1649635200&Signature=F~HALAVVX8CQzapfj-nboaaZA-YzSs5iSOowegVWyiwGLwKDa1hwtcBItv8k2ickML1TfCrEm0PvvAwO4leVcGS0XlkxjfunEBnTk8pXSmjT2ZpMfsrPK7YjOI8DjZ63yXBd6FRraSKD8Q87x3AG~O2hXNib8a4O2W2AyG6ks12QMXR-~ZSp8C7Or8Bss7T5APqgqYbbp3n57cfRywlruCWZzi7Bxuu8dU9O67~Ff2jL3Nm4LhMXhORz-dzqmOxGT7uJTPBkQGSmXmLojsu-pIv3yUXxoMKhQlXxvleFMtYViQSwRXwlgKj6wNbcJ4v-uPfVhnK1Fdh4uVvn30BjQQ__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+  uri: "https://images.unsplash.com/photo-1533222535026-754c501569dd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8f",
 };
 
 const SigninScreen = function ({ navigation }) {
